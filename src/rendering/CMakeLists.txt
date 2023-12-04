@@ -1,2 +1,2 @@
 # create the rendering library
-add_library(rendering Rendering.cpp)
+add_library(rendering rendering.cpp)

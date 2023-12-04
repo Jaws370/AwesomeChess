@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(AwesomeChess LANGUAGES CXX)
 
 # set output for the exe and turn off shared libraries
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINDARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/executable)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # add libraries
@@ -22,7 +22,7 @@ add_executable(AwesomeChess src/main.cpp)
 target_link_libraries(AwesomeChess PUBLIC rendering) # for our libraries
 target_link_libraries(AwesomeChess PRIVATE sfml-graphics) # for sfml libraries
 target_link_libraries(rendering PRIVATE sfml-graphics) # linking sfml to our libraries for use
-# include directories for libraries
+# include directories for h files for libraries
 target_include_directories(AwesomeChess PUBLIC
 	"${PROJECT_BINARY_DIR}/src/rendering"
 )
