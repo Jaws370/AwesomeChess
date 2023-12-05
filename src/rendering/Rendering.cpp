@@ -2,7 +2,7 @@
 
 Rendering::Rendering(std::string windowName)
 {
-   sf::RenderWindow window(sf::VideoMode(800, 600), windowName);
+   sf::RenderWindow window(sf::VideoMode(1920, 1080), windowName);
 
    // Run the program as long as the window is open
    while (window.isOpen())
@@ -21,5 +21,6 @@ Rendering::Rendering(std::string windowName)
 
        // Display the window contents on screen
        window.display();
+       
    }
 }
