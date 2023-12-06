@@ -7,7 +7,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/executable)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # add libraries
-add_subdirectory(src/rendering)
+#add_subdirectory(src/rendering)
 
 # include sfml packages
 include(FetchContent)
@@ -19,13 +19,13 @@ FetchContent_MakeAvailable(SFML)
 # add exe
 add_executable(AwesomeChess src/main.cpp)
 # link packages from sfml library and other libraries (add extra here)
-target_link_libraries(AwesomeChess PUBLIC rendering) # for our libraries
+#target_link_libraries(AwesomeChess PUBLIC rendering) # for our libraries
 target_link_libraries(AwesomeChess PRIVATE sfml-graphics) # for sfml libraries
-target_link_libraries(rendering PRIVATE sfml-graphics) # linking sfml to our libraries for use
+#target_link_libraries(rendering PRIVATE sfml-graphics) # linking sfml to our libraries for use
 # include directories for h files for libraries
-target_include_directories(AwesomeChess PUBLIC
-	"${PROJECT_BINARY_DIR}/src/rendering"
-)
+#target_include_directories(AwesomeChess PUBLIC
+#	"${PROJECT_BINARY_DIR}/src/rendering"
+#)
 # set how to compile packages
 target_compile_features(AwesomeChess PRIVATE cxx_std_17)
 
