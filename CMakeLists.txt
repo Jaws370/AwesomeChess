@@ -8,6 +8,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # add libraries
 add_subdirectory(src/board)
+add_subdirectory(src/piece)
 
 # include sfml packages
 include(FetchContent)
@@ -20,11 +21,14 @@ FetchContent_MakeAvailable(SFML)
 add_executable(AwesomeChess src/main.cpp)
 # link packages from sfml library and other libraries (add extra here)
 target_link_libraries(AwesomeChess PUBLIC board) # for our libraries
+target_link_libraries(AwesomeChess PUBLIC piece)
 target_link_libraries(AwesomeChess PRIVATE sfml-graphics) # for sfml libraries
 target_link_libraries(board PRIVATE sfml-graphics) # linking sfml to our libraries for use
+target_link_libraries(piece PRIVATE sfml-graphics)
 # include directories for h files for libraries
 target_include_directories(AwesomeChess PUBLIC
 	"${PROJECT_BINARY_DIR}/src/board"
+  "${PROJECT_BINARY_DIR}/src/board"
 )
 # set how to compile packages
 target_compile_features(AwesomeChess PRIVATE cxx_std_17)

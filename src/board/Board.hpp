@@ -1,5 +1,5 @@
-#ifndef RENDERING_H
-#define RENDERING_H
+#ifndef BOARD_HPP
+#define BOARD_HPP
 
 #include <iostream>
 #include <vector>
