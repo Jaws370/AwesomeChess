@@ -7,12 +7,12 @@
 
 class Board
 {
+private:
   sf::RectangleShape rectangle[8][8];
 
 public:
   Board();
   sf::RectangleShape (*getRectangle())[8];
-
 };
 
 #endif

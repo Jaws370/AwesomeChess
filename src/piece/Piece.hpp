@@ -3,19 +3,18 @@
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
-  
-class Piece 
-{
-  private:
-    sf::Texture image{};
-    std::string color{};
-    std::string type{};
-    sf::Sprite displayPiece{};
 
-  public:
-    Piece(std::string color, std::string type);
-    sf::Sprite getSprite();
-    
+class Piece
+{
+private:
+  sf::Texture image{};
+  std::string color{};
+  std::string type{};
+  sf::Sprite displayPiece{};
+
+public:
+  Piece(std::string color, std::string type);
+  sf::Sprite getSprite();
 };
 
 #endif
