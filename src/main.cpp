@@ -1,9 +1,13 @@
 #include <SFML/Graphics.hpp>
+#include "./board/board.hpp"
 
 int main()
 {
 
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "awesomechess");
+    Board board;
+    sf::RectangleShape (*boards)[8] = board.getRectangle();
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "awesomechess");
 
     // Run the program as long as the window is open
     while (window.isOpen())
@@ -19,6 +23,12 @@ int main()
 
         // Clear the window with a black color
         window.clear(sf::Color::Black);
+
+      for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+          window.draw(boards[i][j]);
+        }
+      }
 
        // Display the window contents on screen
        window.display();
