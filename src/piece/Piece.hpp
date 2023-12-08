@@ -1,21 +1,21 @@
-#ifndef BOARD_HPP
-#define BOARD_HPP
+#ifndef PIECE_HPP
+#define PIECE_HPP
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
   
-Class Piece 
+class Piece 
 {
   private:
-    sf::Texture image;
-    string color{};
-    string type{};
+    sf::Texture image{};
+    std::string color{};
+    std::string type{};
+    sf::Sprite displayPiece{};
 
   public:
-    sf::Sprite displayPiece;
-    Piece(string color, string type);
+    Piece(std::string color, std::string type);
+    sf::Sprite getSprite();
     
-    
-}
+};
 
 #endif

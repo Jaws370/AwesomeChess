@@ -1,11 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include "./board/board.hpp"
+#include "./piece/Piece.hpp"
 
 int main()
 {
 
     Board board;
     sf::RectangleShape (*boards)[8] = board.getRectangle();
+
+    Piece piece("b", "Bishop");
+    sf::Sprite p = piece.getSprite();
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "awesomechess");
 
@@ -29,6 +33,8 @@ int main()
           window.draw(boards[i][j]);
         }
       }
+
+      window.draw(p);
 
        // Display the window contents on screen
        window.display();
