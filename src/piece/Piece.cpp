@@ -5,7 +5,7 @@ Piece::Piece(std::string color, std::string type)
   this->color = color;
   this->type = type;
 
-  if (!image.loadFromFile("assets/images/" + color + "_" + type + ".png"))
+  if (!image.loadFromFile("../../assets/image/" + color + "_" + type + ".png"))
   {
     std::cerr << "Failed to load image" << std::endl;
   }
