@@ -8,7 +8,7 @@ int main()
   Board board;
   sf::RectangleShape(*boards)[8] = board.getRectangle();
 
-  Piece piece("b", "Bishop");
+  Piece piece("black", "bishop");
   sf::Sprite p = piece.getSprite();
 
   sf::RenderWindow window(sf::VideoMode(800, 600), "awesomechess");
