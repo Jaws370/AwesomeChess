@@ -11,7 +11,7 @@ int main()
   Piece piece("black", "bishop");
   sf::Sprite p = piece.getSprite();
 
-  sf::RenderWindow window(sf::VideoMode(800, 600), "awesomechess");
+  sf::RenderWindow window(sf::VideoMode(800, 600), "AwesomeChess");
 
   // Run the program as long as the window is open
   while (window.isOpen())
@@ -23,6 +23,7 @@ int main()
       // "close requested" event: we close the window
       if (event.type == sf::Event::Closed)
         window.close();
+      // need to add code to change board in case of resizing and change position of pieces
     }
 
     // Clear the window with a black color

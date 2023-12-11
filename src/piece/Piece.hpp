@@ -13,6 +13,7 @@ private:
   sf::Sprite displayPiece{};
 
 public:
+  Piece() = default;
   Piece(std::string color, std::string type);
   sf::Sprite getSprite();
 };

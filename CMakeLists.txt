@@ -4,11 +4,13 @@ project(AwesomeChess LANGUAGES CXX)
 
 # set output for the exe and turn off shared libraries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/exe)
+# shared libraries are not compiled with exe whereas static are
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # add libraries
 add_subdirectory(src/board)
 add_subdirectory(src/piece)
+add_subdirectory(src/pieces)
 
 # include sfml packages
 include(FetchContent)
@@ -19,21 +21,31 @@ FetchContent_MakeAvailable(SFML)
 
 # add exe
 add_executable(AwesomeChess src/main.cpp)
-# link packages from sfml library and other libraries (add extra here)
-target_link_libraries(AwesomeChess PUBLIC board) # for our libraries
+
+# link our libraries to exe
+target_link_libraries(AwesomeChess PUBLIC board)
 target_link_libraries(AwesomeChess PUBLIC piece)
-target_link_libraries(AwesomeChess PRIVATE sfml-graphics) # for sfml libraries
-target_link_libraries(board PRIVATE sfml-graphics) # linking sfml to our libraries for use
+target_link_libraries(AwesomeChess PUBLIC pieces)
+
+# link sfml to exe
+target_link_libraries(AwesomeChess PRIVATE sfml-graphics)
+
+# link sfml to our libraries
+target_link_libraries(board PRIVATE sfml-graphics)
 target_link_libraries(piece PRIVATE sfml-graphics)
-# include directories for h files for libraries
+target_link_libraries(pieces PRIVATE sfml-graphics)
+
+# include hpp file directories for our libraries
 target_include_directories(AwesomeChess PUBLIC
 	"${PROJECT_BINARY_DIR}/src/board"
-  "${PROJECT_BINARY_DIR}/src/board"
+  "${PROJECT_BINARY_DIR}/src/piece"
+  "${PROJECT_BINARY_DIR}/src/pieces"
 )
-# set how to compile packages
+
+# sets the compiler to C++17 (makes it so that if used, it can use newer syntax)
 target_compile_features(AwesomeChess PRIVATE cxx_std_17)
 
-# little thing for windows that adds the sfml .dll file to the compiling process
+# adds openal32.dll for windows machines
 if(WIN32)
     add_custom_command(
         TARGET AwesomeChess
