@@ -16,6 +16,7 @@ public:
   Piece() = default;
   Piece(std::string color, std::string type);
   sf::Sprite getSprite();
+  void setPosition(int x, int y);
 };
 
 #endif

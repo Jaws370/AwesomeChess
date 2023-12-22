@@ -12,7 +12,9 @@ private:
 	Piece chessPieces[8][8];
 
 public:
-	Pieces() = default;
+	Pieces(std::string color, std::string type);
+  Piece (*getPieces())[8];
+
 };
 
 #endif
