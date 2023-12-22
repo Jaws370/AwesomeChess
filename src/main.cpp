@@ -6,7 +6,7 @@
   To do list:
     figure out how to make the pieces move
     figure out how to make the pieces take other pieces
-    
+
 
 
 */
@@ -19,7 +19,6 @@ int main()
   Pieces pieces("black", "bishop");
   Piece(*p)[8] = pieces.getPieces();
 
-  
   sf::RenderWindow window(sf::VideoMode(800, 600), "AwesomeChess");
 
   // Run the program as long as the window is open

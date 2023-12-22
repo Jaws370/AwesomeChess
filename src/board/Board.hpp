@@ -8,6 +8,7 @@
 class Board
 {
 private:
+  int boardSize = 512;
   sf::RectangleShape rectangle[8][8];
 
 public:

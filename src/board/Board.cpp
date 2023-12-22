@@ -7,8 +7,8 @@ Board::Board()
     for (int j = 0; j < 8; j++)
     {
       bool color = (i + j) % 2 == 0;
-      rectangle[i][j].setSize(sf::Vector2f(40.f, 40.f));
-      rectangle[i][j].setPosition(i * 40.f, j * 40.f);
+      rectangle[i][j].setSize(sf::Vector2f(boardSize / 8.f, boardSize / 8.f));
+      rectangle[i][j].setPosition(i * boardSize / 8.f, j * boardSize / 8.f);
       if (color)
       {
         rectangle[i][j].setFillColor(sf::Color(118, 150, 86));
