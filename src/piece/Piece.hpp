@@ -14,9 +14,9 @@ private:
 
 public:
   Piece() = default;
-  void setTexture(const std::string &color, const std::string &type);
+  void setTexture(std::string const &color, std::string const &type);
   sf::Sprite getSprite();
-  void setPosition(int x, int y);
+  void setPosition(int const &x, int const &y);
 };
 
 #endif

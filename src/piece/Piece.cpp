@@ -1,6 +1,6 @@
 #include "Piece.hpp"
 
-void Piece::setTexture(const std::string &color, const std::string &type)
+void Piece::setTexture(std::string const &color, std::string const &type)
 {
   this->color = color;
   this->type = type;
@@ -17,7 +17,7 @@ sf::Sprite Piece::getSprite()
   return displayPiece;
 }
 
-void Piece::setPosition(int x, int y)
+void Piece::setPosition(int const &x, int const &y)
 {
   displayPiece.setPosition(x, y);
 }

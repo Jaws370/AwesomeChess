@@ -8,11 +8,12 @@
 class Board
 {
 private:
-  int boardSize = 512;
-  sf::RectangleShape rectangle[8][8];
+  int boardSize{512};
+  sf::RectangleShape board[8][8];
 
 public:
   Board();
+  void displayBoard(sf::RenderWindow &window);
   sf::RectangleShape (*getRectangle())[8];
 };
 

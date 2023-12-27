@@ -19,9 +19,9 @@ Pieces::Pieces()
 	bPiecesData[13] = std::bitset<64>("1111111111111111000000000000000000000000000000000000000000000000"); // white all pieces
 
 	// set the sprites of the Piece class
-	for (int i = 0; i < 14; i++)
+	for (int i{0}; i < 14; i++)
 	{
-		for (int j = 0; j < 64; j++)
+		for (int j{0}; j < 64; j++)
 		{
 			if (bPiecesData[i][j] == 1)
 			{
@@ -79,6 +79,21 @@ Pieces::Pieces()
 					break;
 				}
 			}
+		}
+	}
+}
+
+/**
+ * draws the pieces using window.draw
+ * @param window takes in the window as a reference to use in the display process
+ */
+void Pieces::displayPieces(sf::RenderWindow &window)
+{
+	for (int i{0}; i < 8; i++)
+	{
+		for (int j{0}; j < 8; j++)
+		{
+			window.draw(piecesArr[i][j].getSprite());
 		}
 	}
 }

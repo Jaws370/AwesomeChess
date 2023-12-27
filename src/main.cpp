@@ -11,9 +11,7 @@ int main()
 {
 
   Board board;
-  sf::RectangleShape(*boards)[8]{board.getRectangle()};
   Pieces pieces;
-  Piece(*p)[8]{pieces.getPieces()};
 
   sf::RenderWindow window(sf::VideoMode(512, 512), "AwesomeChess");
 
@@ -36,7 +34,8 @@ int main()
         {
           if (position.x <= 64 * i)
           {
-            column = i;
+            column = --i;
+            break;
           }
         }
 
@@ -45,9 +44,14 @@ int main()
         {
           if (position.y <= 64 * i)
           {
-            row = i;
+            row = --i;
+            break;
           }
         }
+
+        std::cout << position.x << " " << position.y << std::endl;
+        std::cout << column << " " << row << std::endl;
+        std::cout << row * 8 + column << std::endl;
       }
 
       // "close requested" event: we close the window
@@ -59,21 +63,9 @@ int main()
     // clear the window with a black color
     window.clear(sf::Color::Black);
 
-    for (int i{0}; i < 8; i++)
-    {
-      for (int j{0}; j < 8; j++)
-      {
-        window.draw(boards[i][j]);
-      }
-    }
-
-    for (int i{0}; i < 8; i++)
-    {
-      for (int j{0}; j < 8; j++)
-      {
-        window.draw(p[i][j].getSprite());
-      }
-    }
+    // draw all of the parts of the game
+    board.displayBoard(window);
+    pieces.displayPieces(window);
 
     // display the window contents on screen
     window.display();

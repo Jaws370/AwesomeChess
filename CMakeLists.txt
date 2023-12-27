@@ -30,6 +30,9 @@ target_link_libraries(AwesomeChess PUBLIC pieces)
 # link sfml to exe
 target_link_libraries(AwesomeChess PRIVATE sfml-graphics)
 
+# link our libraries to each other as needed
+target_link_libraries(pieces PUBLIC piece)
+
 # link sfml to our libraries
 target_link_libraries(board PRIVATE sfml-graphics)
 target_link_libraries(piece PRIVATE sfml-graphics)
