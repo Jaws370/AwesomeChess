@@ -6,9 +6,6 @@
   To do list:
     figure out how to make the pieces move
     figure out how to make the pieces take other pieces
-
-
-
 */
 int main()
 {
