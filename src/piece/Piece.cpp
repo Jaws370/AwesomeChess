@@ -1,6 +1,6 @@
 #include "Piece.hpp"
 
-void Piece::setTexture(std::string color, std::string type)
+void Piece::setTexture(const std::string &color, const std::string &type)
 {
   this->color = color;
   this->type = type;
