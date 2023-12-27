@@ -19,7 +19,7 @@ int main()
   Pieces pieces;
   Piece(*p)[8] = pieces.getPieces();
 
-  sf::RenderWindow window(sf::VideoMode(800, 600), "AwesomeChess");
+  sf::RenderWindow window(sf::VideoMode(512, 512), "AwesomeChess");
 
   // Run the program as long as the window is open
   while (window.isOpen())

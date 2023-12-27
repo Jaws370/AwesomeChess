@@ -3,3 +3,4 @@
 .ccls-cache/
 .replit
 replit.nix
+/build
