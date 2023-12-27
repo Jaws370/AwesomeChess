@@ -11,10 +11,11 @@ class Pieces
 {
 private:
 	Piece piecesArr[8][8]{};
-	std::bitset<64> bPiecesData[14]{};
+	std::bitset<64> bPiecesData[12]{};
 
 public:
 	Pieces();
+	int (*getPossibleMoves(int const &pos1))[];
 	void displayPieces(sf::RenderWindow &window);
 	Piece (*getPieces())[8];
 };

@@ -9,7 +9,7 @@ class Board
 {
 private:
   int boardSize{512};
-  sf::RectangleShape board[8][8];
+  sf::RectangleShape rectArr[8][8];
 
 public:
   Board();
