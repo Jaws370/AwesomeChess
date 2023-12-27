@@ -53,6 +53,7 @@ Pieces::Pieces()
  */
 int (*Pieces::getPossibleMoves(int const &pos1))[]
 {
+	return 0;
 }
 
 /**
