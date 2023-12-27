@@ -21,6 +21,7 @@ int main()
 
   sf::RenderWindow window(sf::VideoMode(512, 512), "AwesomeChess");
 
+  sf::Vector2i position;
   // Run the program as long as the window is open
   while (window.isOpen())
   {
@@ -28,6 +29,27 @@ int main()
     sf::Event event;
     while (window.pollEvent(event))
     {
+      if (event.type == sf::Event::MouseButtonPressed)
+      {
+        sf::Vector2i position = sf::Mouse::getPosition(window);
+        int column{};
+        int row{};
+
+        //saves the column that the mouse clicks too a variable
+        for (int i{1};i<=8;i++){
+          if(position.x<=64*i){
+            column=i;
+          }
+        }
+
+        //saves the row that the mouse clicks too a variable
+        for (int i{1};i<=8;i++){
+          if(position.y<=64*i){
+            row=i;
+          }
+        }
+      }
+        
       // "close requested" event: we close the window
       if (event.type == sf::Event::Closed)
         window.close();

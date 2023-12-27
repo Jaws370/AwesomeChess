@@ -6,7 +6,7 @@ void Piece::setTexture(const std::string &color, const std::string &type)
   this->type = type;
 
   // has to be ../../assets/image for vscode and assets/image for replit
-  if (!image.loadFromFile("../../assets/image/" + color + "_" + type + ".png"))
+  if (!image.loadFromFile("assets/image/" + color + "_" + type + ".png"))
     std::cerr << std::endl;
 
   displayPiece.setTexture(image);
