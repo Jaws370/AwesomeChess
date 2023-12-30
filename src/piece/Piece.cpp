@@ -6,7 +6,7 @@ void Piece::setType(std::string const &color, std::string const &type)
   this->type = type;
 
   // has to be ../../assets/image for jack and assets/image for tyler
-  if (!image.loadFromFile("../../assets/image/" + color + "_" + type + ".png"))
+  if (!image.loadFromFile("assets/image/" + color + "_" + type + ".png"))
     std::cerr << std::endl;
 
   displayPiece.setTexture(image);
@@ -20,4 +20,14 @@ sf::Sprite Piece::getSprite()
 void Piece::setPosition(int const &x, int const &y)
 {
   displayPiece.setPosition(x, y);
+}
+
+std::string Piece::getType()
+{
+  return type;
+}
+
+std::string Piece::getColor()
+{
+  return color;
 }

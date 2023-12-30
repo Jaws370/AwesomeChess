@@ -15,7 +15,7 @@ private:
 
 public:
 	Pieces();
-	int (*getPossibleMoves(int const &pos1))[];
+	std::vector<int> getPossibleMoves(int const &pos1);
 	void displayPieces(sf::RenderWindow &window);
 	Piece (*getPieces())[8];
 };
