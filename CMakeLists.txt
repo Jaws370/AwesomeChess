@@ -30,14 +30,6 @@ target_link_libraries(AwesomeChess PUBLIC pieces)
 # link sfml to exe
 target_link_libraries(AwesomeChess PRIVATE sfml-graphics)
 
-# link our libraries to each other as needed
-target_link_libraries(pieces PUBLIC piece)
-
-# link sfml to our libraries
-target_link_libraries(board PRIVATE sfml-graphics)
-target_link_libraries(piece PRIVATE sfml-graphics)
-target_link_libraries(pieces PRIVATE sfml-graphics)
-
 # include hpp file directories for our libraries
 target_include_directories(AwesomeChess PUBLIC
 	"${PROJECT_BINARY_DIR}/src/board"
@@ -57,5 +49,5 @@ if(WIN32)
         VERBATIM)
 endif()
 
-# installs packages (Installs the binary files corresponding to targets built inside the project)
+# installs packages (installs the binary files corresponding to targets built inside the project)
 install(TARGETS AwesomeChess)
