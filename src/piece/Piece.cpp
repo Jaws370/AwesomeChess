@@ -5,7 +5,6 @@ void Piece::setType(std::string const &color, std::string const &type)
   this->color = color;
   this->type = type;
 
-  // has to be ../../assets/image for jack and assets/image for tyler
   if (!image.loadFromFile("assets/image/" + color + "_" + type + ".png"))
     std::cerr << std::endl;
 

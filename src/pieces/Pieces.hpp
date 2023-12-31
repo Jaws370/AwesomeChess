@@ -11,7 +11,8 @@ class Pieces
 {
 private:
 	Piece piecesArr[8][8]{};
-	std::bitset<64> bPiecesData[12]{};
+	std::bitset<64> bPiecesData[14]{};
+	static int toInt(int const &col, int const &row);
 
 public:
 	Pieces();

@@ -27,10 +27,21 @@ Board::Board()
  */
 void Board::displayBoard(sf::RenderWindow &window)
 {
+  if (!window.isOpen())
+  {
+    std::cerr << "Error: window is not open" << std::endl;
+    return;
+  }
+
   for (int i{0}; i < 8; i++)
   {
     for (int j{0}; j < 8; j++)
     {
+      if (!rectArr[i][j].getSize().x || !rectArr[i][j].getSize().y)
+      {
+        std::cerr << "Error: rectangle at (" << i << ", " << j << ") is not initialized" << std::endl;
+        return;
+      }
       window.draw(rectArr[i][j]);
     }
   }

@@ -48,7 +48,15 @@ Pieces::Pieces()
 	}
 }
 
-int toInt(int &col, int &row)
+/**
+ * ! created for the getPossibleMoves method
+ * takes the column and the row and returns an int (0-63)
+ * of that position on the board
+ * @param col the column
+ * @param row the row
+ * @returns an int (0-63) representing positioning on the board
+ */
+int Pieces::toInt(int const &col, int const &row)
 {
 	return (col * 8) + row;
 }
@@ -60,119 +68,194 @@ int toInt(int &col, int &row)
  */
 std::vector<int> Pieces::getPossibleMoves(int const &pos)
 {
+	// get the column and the row from the current position
 	int const col = pos % 8;
 	int const row = pos / 8;
 
-	std::string const color{piecesArr[column][row].getColor()};
-	std::string const type{piecesArr[column][row].getType()};
+	// gets the type and color of the piece
+	std::string const color{piecesArr[col][row].getColor()};
+	std::string const type{piecesArr[col][row].getType()};
 
-	vector<int> output{};
+	// creates the output vector
+	std::vector<int> output{};
 
-	if (type == "pawn")
+	// gets pawn moves
+	if (type == "pawn") // TODO need to add not moved checking and en passent
 	{
+		// needs to move up the board if white
 		if (color == "white")
 		{
 			output.push_back(toInt(col, row + 1));
-			output.push_back(toInt(col, row + 2)); // need to make it so it only added when not moved
+			output.push_back(toInt(col, row + 2)); // TODO need to make it so it only added when not moved
 		}
+		// needs to move down the board if black
 		else
 		{
 			output.push_back(toInt(col, row - 1));
-			output.push_back(toInt(col, row - 2)); // need to make it so it only added when not moved
+			output.push_back(toInt(col, row - 2)); // TODO need to make it so it only added when not moved
 		}
 	}
+	// gets knight moves
 	else if (type == "knight")
 	{
-		output.push_back(toInt(col + 1, row + 2), toInt(col + 2, row + 1), toInt(col + 2, row - 1) toInt(col + 1, row - 2), toInt(col - 1, row - 2), toInt(col - 2, row - 1), toInt(col - 2, row + 1), toInt(col - 1, row + 2))
+		// creates a vector containing all possible knight moves
+		std::vector<std::pair<int, int>> directions{{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
+		for (auto &direction : directions)
+		{
+			// creates new col and row
+			int newCol{col + direction.first};
+			int newRow{row + direction.second};
+
+			// checks if own piece is there (if so then it cannot go there)
+			if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
+			{
+				continue;
+			}
+			// checks if new space is within the range of the board
+			else if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
+			{
+				output.push_back(toInt(newCol, newRow));
+			}
+		}
 	}
+	// gets bishop moves
 	else if (type == "bishop")
 	{
-
+		// each direction the piece can go
 		int directions[4][2]{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
 
+		// checks each direction
 		for (int i = 0; i < sizeof(directions); i++)
 		{
-			curCheck = toInt(col + (direction[i, 0] * i), row + (direction(i, 1) * i));
-			int distanceCount = 1;
+			// keeps track of the columns and the rows
+			int newCol{col + directions[i][0]};
+			int newRow{row + directions[i][1]};
 
-			while (curCheck < 0 || curCheck > 63)
+			// iterates as long as they are inside of the range of the board
+			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
-				if (bPiecesData[color == "white" ? 12 : 13][curCheck] == 1)
+				// checks if own piece is there (if so then it cannot go there)
+				if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
 				{
 					break;
 				}
 
-				output.push_back(curCheck);
+				// add current check as possible move
+				output.push_back(toInt(newCol, newRow));
+
+				// checks if opponsent's piece is there (if so can go there)
+				if (bPiecesData[color == "black" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				{
+					break;
+				}
+
+				// checking next space
+				newCol += directions[i][0];
+				newRow += directions[i][1];
 			}
 		}
 	}
+	// gets rook moves
 	else if (type == "rook")
 	{
-		// Define the four possible directions the rook can move
-		int directions[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+		// the directions this piece can move
+		int directions[4][2]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-		for (int i = 0; i < 4; i++)
+		// checks each direction
+		for (int i = 0; i < sizeof(directions); i++)
 		{
-			int newRow = row + directions[i][0];
-			int newCol = col + directions[i][1];
+			// keeps track of the columns and the rows
+			int newCol{col + directions[i][0]};
+			int newRow{row + directions[i][1]};
 
-			// Check if the new position is within the bounds of the board
+			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
-				// If the square is not occupied, add it to the list of possible moves
-				if (board[newRow][newCol] == '.')
+				// checks if own piece is there (if so then it cannot go there)
+				if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
 				{
-					output.push_back({newRow, newCol});
-				}
-				else
-				{
-					// If the square is occupied, stop checking this direction
 					break;
 				}
 
-				// Move to the next square in this direction
-				newRow += directions[i][0];
-				newCol += directions[i][1];
+				// add current check as possible move
+				output.push_back(toInt(newCol, newRow));
+
+				// checks if opponsent's piece is there (if so can go there)
+				if (bPiecesData[color == "black" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				{
+					break;
+				}
+
+				// checking next space
+				newCol += directions[i][0];
+				newRow += directions[i][1];
 			}
 		}
 	}
+	// gets queen moves
 	else if (type == "queen")
 	{
-		// Define the eight possible directions the rook can move
+		// the directions this piece can move
 		int directions[8][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
 
-		for (int i = 0; i < 8; i++)
+		// checks each direction
+		for (int i = 0; i < sizeof(directions); i++)
 		{
-			int newRow = row + directions[i][0];
-			int newCol = col + directions[i][1];
+			// keeps track of the columns and the rows
+			int newCol{col + directions[i][0]};
+			int newRow{row + directions[i][1]};
 
-			// Check if the new position is within the bounds of the board
+			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
-				// If the square is not occupied, add it to the list of possible moves
-				if (board[newRow][newCol] == '.')
+				// checks if own piece is there (if so then it cannot go there)
+				if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
 				{
-					output.push_back({newRow, newCol});
-				}
-				else
-				{
-					// If the square is occupied, stop checking this direction
+					// stops checking this direction
 					break;
 				}
 
-				// Move to the next square in this direction
-				newRow += directions[i][0];
-				newCol += directions[i][1];
+				// add current check as possible move
+				output.push_back(toInt(newCol, newRow));
+
+				// checks if opponsent's piece is there (if so can go there)
+				if (bPiecesData[color == "black" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				{
+					// stops checking this direction
+					break;
+				}
+
+				// checking next space
+				newCol += directions[i][0];
+				newRow += directions[i][1];
 			}
 		}
 	}
-}
-else if (type == "king")
-{
-	output.pushback(toInt(col, row + 1), toInt(col + 1, row + 1), toInt(col + 1, row), toInt(col + 1, row - 1), toInt(col, row - 1), toInt(col - 1, row - 1), toInt(col - 1, row), toInt(col - 1, row + 1))
-}
+	// gets king moves
+	else if (type == "king") // TODO need to add checks checking and castling
+	{
+		// creates a vector containing all possible knight moves
+		std::vector<std::pair<int, int>> directions{{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+		for (auto &direction : directions)
+		{
+			// creates new col and row
+			int newCol{col + direction.first};
+			int newRow{row + direction.second};
 
-return output;
+			// checks if own piece is there (if so then it cannot go there)
+			if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
+			{
+				continue;
+			}
+			// checks if new space is within the range of the board
+			else if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
+			{
+				output.push_back(toInt(newCol, newRow)); // TODO make it check if the move will cause king to be under check
+			}
+		}
+	}
+
+	return output;
 }
 
 /**
