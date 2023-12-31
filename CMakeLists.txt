@@ -14,9 +14,10 @@ add_subdirectory(src/pieces)
 
 # include sfml packages
 include(FetchContent)
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 2.6.x)
+FetchContent_Declare(
+  SFML
+  GIT_REPOSITORY https://github.com/SFML/SFML.git
+  GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
 # add exe
@@ -31,23 +32,26 @@ target_link_libraries(AwesomeChess PUBLIC pieces)
 target_link_libraries(AwesomeChess PRIVATE sfml-graphics)
 
 # include hpp file directories for our libraries
-target_include_directories(AwesomeChess PUBLIC
-	"${PROJECT_BINARY_DIR}/src/board"
-  "${PROJECT_BINARY_DIR}/src/piece"
-  "${PROJECT_BINARY_DIR}/src/pieces"
-)
+target_include_directories(
+  AwesomeChess
+  PUBLIC "${PROJECT_BINARY_DIR}/src/board" "${PROJECT_BINARY_DIR}/src/piece"
+         "${PROJECT_BINARY_DIR}/src/pieces")
 
 # sets the compiler to C++17 (makes it so that if used, it can use newer syntax)
 target_compile_features(AwesomeChess PRIVATE cxx_std_17)
 
 # adds openal32.dll for windows machines
 if(WIN32)
-    add_custom_command(
-        TARGET AwesomeChess
-        COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:AwesomeChess>
-        VERBATIM)
+  add_custom_command(
+    TARGET AwesomeChess
+    COMMENT "Copy OpenAL DLL"
+    PRE_BUILD
+    COMMAND
+      ${CMAKE_COMMAND} -E copy
+      ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll
+      $<TARGET_FILE_DIR:AwesomeChess>
+    VERBATIM)
 endif()
 
-# installs packages (installs the binary files corresponding to targets built inside the project)
+# installs packages & binary files corresponding to targets
 install(TARGETS AwesomeChess)
