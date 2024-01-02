@@ -22,8 +22,8 @@ Pieces::Pieces()
 	bPiecesData[9] = std::bitset<64>("1000000100000000000000000000000000000000000000000000000000000000");  // white rook
 	bPiecesData[10] = std::bitset<64>("0001000000000000000000000000000000000000000000000000000000000000"); // white queen
 	bPiecesData[11] = std::bitset<64>("0000100000000000000000000000000000000000000000000000000000000000"); // white king
-	bPiecesData[12] = std::bitset<64>("0000000000000000000000000000000000000000000000001111111111111111"); // all white pieces
-	bPiecesData[13] = std::bitset<64>("1111111111111111000000000000000000000000000000000000000000000000"); // all black pieces
+	bPiecesData[12] = std::bitset<64>("0000000000000000000000000000000000000000000000001111111111111111"); // all black pieces
+	bPiecesData[13] = std::bitset<64>("1111111111111111000000000000000000000000000000000000000000000000"); // all white pieces
 
 	// looping through all the bitsets
 	for (int i{0}; i < 12; i++)
@@ -58,7 +58,7 @@ Pieces::Pieces()
  */
 int Pieces::toInt(int const &col, int const &row)
 {
-	return (col * 8) + row;
+	return (row * 8) + col;
 }
 
 /**
@@ -85,14 +85,26 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 		// needs to move up the board if white
 		if (color == "white")
 		{
-			output.push_back(toInt(col, row + 1));
-			output.push_back(toInt(col, row + 2)); // TODO need to make it so it only added when not moved
+			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)] == 0)
+			{
+				output.push_back(toInt(col, row + 1));
+				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] == 0)
+				{
+					output.push_back(toInt(col, row + 2)); // TODO need to make it so it only added when not moved
+				}
+			}
 		}
 		// needs to move down the board if black
 		else
 		{
-			output.push_back(toInt(col, row - 1));
-			output.push_back(toInt(col, row - 2)); // TODO need to make it so it only added when not moved
+			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 1)] == 0)
+			{
+				output.push_back(toInt(col, row + 1));
+				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] == 0)
+				{
+					output.push_back(toInt(col, row + 2)); // TODO need to make it so it only added when not moved
+				}
+			}
 		}
 	}
 	// gets knight moves
@@ -106,14 +118,14 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 			int newCol{col + direction.first};
 			int newRow{row + direction.second};
 
-			// checks if own piece is there (if so then it cannot go there)
-			if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
+			// checks if is in range of board
+			if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
-				continue;
-			}
-			// checks if new space is within the range of the board
-			else if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
-			{
+				// checks if own piece is there (if so then it cannot go there)
+				if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
+				{
+					continue;
+				}
 				output.push_back(toInt(newCol, newRow));
 			}
 		}
@@ -122,20 +134,20 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "bishop")
 	{
 		// each direction the piece can go
-		int directions[4][2]{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
+		std::vector<std::pair<int, int>> directions{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
 
 		// checks each direction
-		for (int i = 0; i < sizeof(directions); i++)
+		for (int i = 0; i < directions.size(); i++)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + directions[i][0]};
-			int newRow{row + directions[i][1]};
+			int newCol{col + directions[i].first};
+			int newRow{row + directions[i].second};
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
 				// checks if own piece is there (if so then it cannot go there)
-				if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					break;
 				}
@@ -144,14 +156,14 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				output.push_back(toInt(newCol, newRow));
 
 				// checks if opponsent's piece is there (if so can go there)
-				if (bPiecesData[color == "black" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					break;
 				}
 
 				// checking next space
-				newCol += directions[i][0];
-				newRow += directions[i][1];
+				newCol += directions[i].first;
+				newRow += directions[i].second;
 			}
 		}
 	}
@@ -159,20 +171,20 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "rook")
 	{
 		// the directions this piece can move
-		int directions[4][2]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+		std::vector<std::pair<int, int>> directions{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
 		// checks each direction
-		for (int i = 0; i < sizeof(directions); i++)
+		for (int i = 0; i < directions.size(); i++)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + directions[i][0]};
-			int newRow{row + directions[i][1]};
+			int newCol{col + directions[i].first};
+			int newRow{row + directions[i].second};
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
 				// checks if own piece is there (if so then it cannot go there)
-				if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					break;
 				}
@@ -181,14 +193,14 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				output.push_back(toInt(newCol, newRow));
 
 				// checks if opponsent's piece is there (if so can go there)
-				if (bPiecesData[color == "black" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					break;
 				}
 
 				// checking next space
-				newCol += directions[i][0];
-				newRow += directions[i][1];
+				newCol += directions[i].first;
+				newRow += directions[i].second;
 			}
 		}
 	}
@@ -196,20 +208,20 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "queen")
 	{
 		// the directions this piece can move
-		int directions[8][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
+		std::vector<std::pair<int, int>> directions{{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
 
 		// checks each direction
-		for (int i = 0; i < sizeof(directions); i++)
+		for (int i = 0; i < directions.size(); i++)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + directions[i][0]};
-			int newRow{row + directions[i][1]};
+			int newCol{col + directions[i].first};
+			int newRow{row + directions[i].second};
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
 				// checks if own piece is there (if so then it cannot go there)
-				if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					// stops checking this direction
 					break;
@@ -219,15 +231,15 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				output.push_back(toInt(newCol, newRow));
 
 				// checks if opponsent's piece is there (if so can go there)
-				if (bPiecesData[color == "black" ? 12 : 13][toInt(newCol, newRow)] == 1)
+				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					// stops checking this direction
 					break;
 				}
 
 				// checking next space
-				newCol += directions[i][0];
-				newRow += directions[i][1];
+				newCol += directions[i].first;
+				newRow += directions[i].second;
 			}
 		}
 	}
@@ -242,16 +254,28 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 			int newCol{col + direction.first};
 			int newRow{row + direction.second};
 
-			// checks if own piece is there (if so then it cannot go there)
-			if (bPiecesData[color == "white" ? 12 : 13][toInt(newCol, newRow)] == 1)
+			// checks if is in range of board
+			if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 			{
-				continue;
+				// checks if own piece is there (if so then it cannot go there)
+				if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
+				{
+					continue;
+				}
+				output.push_back(toInt(newCol, newRow));
 			}
-			// checks if new space is within the range of the board
-			else if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
-			{
-				output.push_back(toInt(newCol, newRow)); // TODO make it check if the move will cause king to be under check
-			}
+		}
+	}
+
+	std::cout << output.size() << std::endl;
+	std::cout << type << " " << color << std::endl;
+	std::cout << col << " " << row << std::endl;
+
+	if (!output.empty())
+	{
+		for (int i{0}; i < output.size(); i++)
+		{
+			std::cout << output[i] << std::endl;
 		}
 	}
 

@@ -2,6 +2,7 @@
 #include "./board/Board.hpp"
 #include "./pieces/Pieces.hpp"
 #include "./piece/Piece.hpp"
+#include <iostream>
 
 int main()
 {
@@ -22,7 +23,7 @@ int main()
       if (event.type == sf::Event::MouseButtonPressed)
       {
         sf::Vector2i position = sf::Mouse::getPosition(window);
-        int column{};
+        int col{};
         int row{};
 
         // saves the column that the mouse clicks to a variable column
@@ -30,7 +31,7 @@ int main()
         {
           if (position.x <= 64 * i)
           {
-            column = --i;
+            col = --i;
             break;
           }
         }
@@ -45,9 +46,7 @@ int main()
           }
         }
 
-        std::cout << position.x << " " << position.y << std::endl;
-        std::cout << column << " " << row << std::endl;
-        std::cout << row * 8 + column << std::endl;
+        std::vector<int> possibleMoves = pieces.getPossibleMoves(pieces.toInt(col, row));
       }
 
       // "close requested" event: we close the window
