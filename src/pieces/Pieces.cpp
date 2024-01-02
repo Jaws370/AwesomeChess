@@ -87,10 +87,11 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 		{
 			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)] == 0)
 			{
-				output.push_back(toInt(col, row + 1));
+				output.push_back(toInt(col, row - 1));
+
 				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] == 0)
 				{
-					output.push_back(toInt(col, row + 2)); // TODO need to make it so it only added when not moved
+					output.push_back(toInt(col, row - 2)); // TODO need to make it so it only added when not moved
 				}
 			}
 		}
@@ -112,6 +113,8 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	{
 		// creates a vector containing all possible knight moves
 		std::vector<std::pair<int, int>> directions{{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
+
+		// checks each direction
 		for (auto &direction : directions)
 		{
 			// creates new col and row
@@ -137,11 +140,11 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 		std::vector<std::pair<int, int>> directions{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
 
 		// checks each direction
-		for (int i = 0; i < directions.size(); i++)
+		for (auto &direction : directions)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + directions[i].first};
-			int newRow{row + directions[i].second};
+			int newCol{col + direction.first};
+			int newRow{row + direction.second};
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -149,6 +152,7 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				// checks if own piece is there (if so then it cannot go there)
 				if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
+					// stops checking this direction
 					break;
 				}
 
@@ -158,12 +162,13 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				// checks if opponsent's piece is there (if so can go there)
 				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
+					// stops checking this direction
 					break;
 				}
 
 				// checking next space
-				newCol += directions[i].first;
-				newRow += directions[i].second;
+				newCol += direction.first;
+				newRow += direction.second;
 			}
 		}
 	}
@@ -174,11 +179,11 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 		std::vector<std::pair<int, int>> directions{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
 		// checks each direction
-		for (int i = 0; i < directions.size(); i++)
+		for (auto &direction : directions)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + directions[i].first};
-			int newRow{row + directions[i].second};
+			int newCol{col + direction.first};
+			int newRow{row + direction.second};
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -186,6 +191,7 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				// checks if own piece is there (if so then it cannot go there)
 				if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
+					// stops checking this direction
 					break;
 				}
 
@@ -195,12 +201,13 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				// checks if opponsent's piece is there (if so can go there)
 				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
+					// stops checking this direction
 					break;
 				}
 
 				// checking next space
-				newCol += directions[i].first;
-				newRow += directions[i].second;
+				newCol += direction.first;
+				newRow += direction.second;
 			}
 		}
 	}
@@ -211,11 +218,11 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 		std::vector<std::pair<int, int>> directions{{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
 
 		// checks each direction
-		for (int i = 0; i < directions.size(); i++)
+		for (auto &direction : directions)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + directions[i].first};
-			int newRow{row + directions[i].second};
+			int newCol{col + direction.first};
+			int newRow{row + direction.second};
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -238,8 +245,8 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				}
 
 				// checking next space
-				newCol += directions[i].first;
-				newRow += directions[i].second;
+				newCol += direction.first;
+				newRow += direction.second;
 			}
 		}
 	}
@@ -248,6 +255,8 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	{
 		// creates a vector containing all possible knight moves
 		std::vector<std::pair<int, int>> directions{{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+
+		// checks each direction
 		for (auto &direction : directions)
 		{
 			// creates new col and row
@@ -267,7 +276,6 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 		}
 	}
 
-	std::cout << output.size() << std::endl;
 	std::cout << type << " " << color << std::endl;
 	std::cout << col << " " << row << std::endl;
 
