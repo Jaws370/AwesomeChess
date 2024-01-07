@@ -290,6 +290,80 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	return output;
 }
 
+void Pieces::movePiece(int &pos1, int &pos2)
+{
+	std::vector<std::string> const boardTypeArr{"pawn", "bishop", "knight", "rook", "queen", "king"};
+
+	std::bitset<64> bPos1{"1000000000000000000000000000000000000000000000000000000000000000"};
+	bPos1 = bPos1 >> pos1;
+
+	std::bitset<64> bPos2{"1000000000000000000000000000000000000000000000000000000000000000"};
+	bPos2 = bPos2 >> pos2;
+
+	// move its own piece
+	std::string color{piecesArr[pos1 % 8][pos1 / 8].getColor()};
+	std::string type{piecesArr[pos1 % 8][pos1 / 8].getType()};
+
+	int board{find(boardTypeArr.begin(), boardTypeArr.end(), type) - boardTypeArr.begin()};
+	board += color == "white" ? 6 : 0;
+
+	bPiecesData[board] = bPiecesData[board] ^ bPos1;
+	bPiecesData[board] = bPiecesData[board] | bPos2;
+
+	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos1;
+	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] | bPos2;
+
+	// take out piece if it is taking a piece
+	color = piecesArr[pos2 % 8][pos2 / 8].getColor();
+	type = piecesArr[pos2 % 8][pos2 / 8].getType();
+
+	if (type == "")
+	{
+		return;
+	}
+
+	board = find(boardTypeArr.begin(), boardTypeArr.end(), type) - boardTypeArr.begin();
+	board += color == "white" ? 6 : 0;
+
+	bPiecesData[board] = bPiecesData[board] ^ bPos2;
+
+	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos2;
+
+	// update board
+	updateBoard();
+}
+
+void Pieces::updateBoard()
+{
+	std::string const pieceTypes[6]{"pawn", "bishop", "knight", "rook", "queen", "king"};
+
+	// looping through all the bitsets
+	for (int i{0}; i < 12; i++)
+	{
+		// looping through all of the individual bits
+		for (int j{0}; j < 64; j++)
+		{
+			// constants for column and row
+			int const col = j % 8;
+			int const row = j / 8;
+
+			// if there is a piece there (else there should be no type)
+			if (bPiecesData[i][j] == 1)
+			{
+				// sets the type of the Piece based on whether the array its going through is < 6
+				// and sets pieceTypes based off of which array it is going through
+				piecesArr[col][row].setType(i < 6 ? "black" : "white", pieceTypes[i % 6]);
+				// sets position based on row and column the piece is in
+				piecesArr[col][row].setPosition(col * 64, row * 64);
+			}
+			else
+			{
+				piecesArr[col][row].setType("", "");
+			}
+		}
+	}
+}
+
 /**
  * draws the pieces using window.draw
  * @param window takes in the window as a reference to use in the display process

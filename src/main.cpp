@@ -10,6 +10,9 @@ int main()
   Board board;
   Pieces pieces;
 
+  std::pair<int, int> moves{-1, -1};
+  std::vector<int> possibleMoves{};
+
   sf::RenderWindow window(sf::VideoMode(512, 512), "AwesomeChess");
 
   // run the program as long as the window is open
@@ -46,7 +49,19 @@ int main()
           }
         }
 
-        std::vector<int> possibleMoves = pieces.getPossibleMoves(pieces.toInt(col, row));
+        if (moves.first != -1)
+        {
+          moves.first = pieces.toInt(col, row);
+          possibleMoves = pieces.getPossibleMoves(pieces.toInt(col, row));
+        }
+        else
+        {
+          moves.second = pieces.toInt(col, row);
+          if (std::find(possibleMoves.begin(), possibleMoves.end(), moves.second) != possibleMoves.end())
+          {
+            pieces.
+          }
+        }
       }
 
       // "close requested" event: we close the window
