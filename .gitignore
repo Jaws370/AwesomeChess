@@ -2,6 +2,8 @@
 .vscode
 /build
 /bin
+CMakeSettings.json
+.vs
 
 # ignoring replit stuff for when it is used
 .ccls-cache/

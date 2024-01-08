@@ -16,9 +16,9 @@ private:
 public:
 	Pieces();
 	std::vector<int> getPossibleMoves(int const &pos1);
-    void movePiece(int &pos1, int &pos2);
-    void displayPieces(sf::RenderWindow &window);
-    Piece (*getPieces())[8];
+	void movePiece(int &pos1, int &pos2);
+	void displayPieces(sf::RenderWindow &window);
+	Piece (*getPieces())[8];
 	static int toInt(int const &col, int const &row);
 	void updateBoard();
 };
