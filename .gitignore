@@ -1,7 +1,7 @@
 # vscode ignores
 .vscode
-/bin
 /build
+/bin
 
 # ignoring replit stuff for when it is used
 .ccls-cache/

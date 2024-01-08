@@ -49,18 +49,22 @@ int main()
           }
         }
 
-        if (moves.first != -1)
+        if (moves.first == -1)
         {
+          std::cout << "move 1" << std::endl;
           moves.first = pieces.toInt(col, row);
           possibleMoves = pieces.getPossibleMoves(pieces.toInt(col, row));
         }
         else
         {
+          std::cout << "move 2" << std::endl;
           moves.second = pieces.toInt(col, row);
           if (std::find(possibleMoves.begin(), possibleMoves.end(), moves.second) != possibleMoves.end())
           {
-            pieces.
+            pieces.movePiece(moves.first, moves.second);
+            pieces.updateBoard();
           }
+          moves = {-1, -1};
         }
       }
 

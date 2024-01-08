@@ -19,6 +19,7 @@ public:
   std::string getType();
   std::string getColor();
   void setPosition(int const &x, int const &y);
+  void reset();
 };
 
 #endif

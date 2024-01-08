@@ -25,27 +25,7 @@ Pieces::Pieces()
 	bPiecesData[12] = std::bitset<64>("0000000000000000000000000000000000000000000000001111111111111111"); // all black pieces
 	bPiecesData[13] = std::bitset<64>("1111111111111111000000000000000000000000000000000000000000000000"); // all white pieces
 
-	// looping through all the bitsets
-	for (int i{0}; i < 12; i++)
-	{
-		// looping through all of the individual bits
-		for (int j{0}; j < 64; j++)
-		{
-			// if there is a piece there (else there should be no type)
-			if (bPiecesData[i][j] == 1)
-			{
-				// constants for column and row
-				int const column = j % 8;
-				int const row = j / 8;
-
-				// sets the type of the Piece based on whether the array its going through is < 6
-				// and sets pieceTypes based off of which array it is going through
-				piecesArr[column][row].setType(i < 6 ? "black" : "white", pieceTypes[i % 6]);
-				// sets position based on row and column the piece is in
-				piecesArr[column][row].setPosition(column * 64, row * 64);
-			}
-		}
-	}
+	updateBoard();
 }
 
 /**
@@ -290,26 +270,34 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	return output;
 }
 
+/**
+ * changes the bitsets that represent the board
+ * @param pos1 takes in the old position
+ * @param pos2 takes in new position
+ */
 void Pieces::movePiece(int &pos1, int &pos2)
 {
+	// create vector with types of moves (helps with choosing from bPiecesData)
 	std::vector<std::string> const boardTypeArr{"pawn", "bishop", "knight", "rook", "queen", "king"};
 
-	std::bitset<64> bPos1{"1000000000000000000000000000000000000000000000000000000000000000"};
-	bPos1 = bPos1 >> pos1;
+	// create a bit value representing each of the pieces we are moving
+	std::bitset<64> bPos1{"0000000000000000000000000000000000000000000000000000000000000001"};
+	bPos1 = bPos1 << pos1;
 
-	std::bitset<64> bPos2{"1000000000000000000000000000000000000000000000000000000000000000"};
-	bPos2 = bPos2 >> pos2;
+	std::bitset<64> bPos2{"0000000000000000000000000000000000000000000000000000000000000001"};
+	bPos2 = bPos2 << pos2;
 
 	// move its own piece
 	std::string color{piecesArr[pos1 % 8][pos1 / 8].getColor()};
 	std::string type{piecesArr[pos1 % 8][pos1 / 8].getType()};
 
-	int board{find(boardTypeArr.begin(), boardTypeArr.end(), type) - boardTypeArr.begin()};
+	int board{int(find(boardTypeArr.begin(), boardTypeArr.end(), type) - boardTypeArr.begin())};
 	board += color == "white" ? 6 : 0;
 
 	bPiecesData[board] = bPiecesData[board] ^ bPos1;
 	bPiecesData[board] = bPiecesData[board] | bPos2;
 
+	// update the piecesData for its own color
 	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos1;
 	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] | bPos2;
 
@@ -319,12 +307,14 @@ void Pieces::movePiece(int &pos1, int &pos2)
 
 	if (type == "")
 	{
+		updateBoard();
 		return;
 	}
 
 	board = find(boardTypeArr.begin(), boardTypeArr.end(), type) - boardTypeArr.begin();
 	board += color == "white" ? 6 : 0;
 
+	// remove taken piece
 	bPiecesData[board] = bPiecesData[board] ^ bPos2;
 
 	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos2;
@@ -333,9 +323,22 @@ void Pieces::movePiece(int &pos1, int &pos2)
 	updateBoard();
 }
 
+/**
+ * re-uploads data to the piecesArr
+ */
 void Pieces::updateBoard()
 {
+	// outlines the types of pieces for easy sorting
 	std::string const pieceTypes[6]{"pawn", "bishop", "knight", "rook", "queen", "king"};
+
+	// resets them all
+	for (int i{0}; i < 8; i++)
+	{
+		for (int j{0}; j < 8; j++)
+		{
+			piecesArr[i][j].reset();
+		}
+	}
 
 	// looping through all the bitsets
 	for (int i{0}; i < 12; i++)
@@ -355,10 +358,6 @@ void Pieces::updateBoard()
 				piecesArr[col][row].setType(i < 6 ? "black" : "white", pieceTypes[i % 6]);
 				// sets position based on row and column the piece is in
 				piecesArr[col][row].setPosition(col * 64, row * 64);
-			}
-			else
-			{
-				piecesArr[col][row].setType("", "");
 			}
 		}
 	}

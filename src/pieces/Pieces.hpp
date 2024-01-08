@@ -21,7 +21,6 @@ public:
     Piece (*getPieces())[8];
 	static int toInt(int const &col, int const &row);
 	void updateBoard();
-	void movePiece(int &pos1, int &pos2);
 };
 
 #endif
