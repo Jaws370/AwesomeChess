@@ -402,9 +402,9 @@ poppCc	std::vector<int> output{};
 	{
 		if (bPiecesData[color == "black" ? 13 : 12][i] == 1)
 		{
-o			output.pushppCback(getPossibleMoves(i));
+			output.pushppCback(getPossibleMoves(i));
 		}
-c	}
+	}
 
 	return output;
 }

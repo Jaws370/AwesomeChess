@@ -4,6 +4,22 @@
 #include "./piece/Piece.hpp"
 #include <iostream>
 
+/*
+TODO List:
+bugfix and test castling, checking and movement for the king
+add a main menu screen with a start button, and a screen that plays after someone wins, which displays who won and who lost, as well as a replay button
+add a counter that counts the material lost and gained for each player, as well as an icon of the pieces lost, just like chess.com
+make the pieces move instead of teleport
+add en passant
+add sounds for actions such as pieces moving, king being in check, etc.
+allow for the chess pieces to be dragged and point-and-click
+add a hud for player 1 and player 2
+add dots to each square where the piece can move and for the king, make the dots red where he can't go
+add a circle around pieces that could be captured when a piece is selected
+letters and numbers on the edge of the board, labeled 1-8 on the left column and a-h on the bottom row
+when a piece moves to a new square, make the old position and new position a lighter green if it is on a green square, and slightly yellow if on a white square
+*/
+
 int main()
 {
 
