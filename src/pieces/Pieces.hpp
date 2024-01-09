@@ -12,7 +12,6 @@ class Pieces
 private:
 	Piece piecesArr[8][8]{};
 	std::bitset<64> bPiecesData[14]{};
-
 public:
 	Pieces();
 	std::vector<int> getPossibleMoves(int const &pos1);

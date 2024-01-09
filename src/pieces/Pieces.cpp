@@ -1,5 +1,4 @@
 #include "Pieces.hpp"
-
 /**
  * creates the boards for the pieces (bitstrings)
  * and sets all pieces for starting game (textures and such) accordingly
@@ -59,8 +58,10 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	// creates the output vector
 	std::vector<int> output{};
 
+	bool const hasMoved{true};
+
 	// gets pawn moves
-	if (type == "pawn") // TODO need to add not moved checking and en passent
+	if (type == "pawn") // TODO need to add en passent
 	{
 		// needs to move up the board if white
 		if (color == "white")
@@ -69,9 +70,13 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 			{
 				output.push_back(toInt(col, row - 1));
 
-				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] == 0)
+				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] == 0 && row == 6)
 				{
-					output.push_back(toInt(col, row - 2)); // TODO need to make it so it only added when not moved
+					output.push_back(toInt(col, row - 2));
+				}
+				if ((bPiecesData[12])[toInt(col-1,row-1)]==1||bPiecesData[12][toInt(col+1,row-1)]==1){
+					output.push_back(toInt(col-1,row-1));
+					output.push_back(toInt(col+1,row-1));
 				}
 			}
 		}
@@ -81,9 +86,13 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 1)] == 0)
 			{
 				output.push_back(toInt(col, row + 1));
-				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] == 0)
+				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] == 0 && row == 2)
 				{
-					output.push_back(toInt(col, row + 2)); // TODO need to make it so it only added when not moved
+					output.push_back(toInt(col, row + 2)); 
+				}
+				if ((bPiecesData[13])[toInt(col-1,row+1)]==1||bPiecesData[13][toInt(col+1,row+1)]==1){
+					output.push_back(toInt(col-1,row+1));
+					output.push_back(toInt(col+1,row+1));
 				}
 			}
 		}
@@ -231,11 +240,13 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 		}
 	}
 	// gets king moves
-	else if (type == "king") // TODO need to add checks checking and castling
+	else if (type == "king") // TODO need to add castling
 	{
+		std::vector<int> tempOutput{};
+		
 		// creates a vector containing all possible knight moves
 		std::vector<std::pair<int, int>> directions{{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
-
+		
 		// checks each direction
 		for (auto &direction : directions)
 		{
@@ -251,9 +262,26 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				{
 					continue;
 				}
-				output.push_back(toInt(newCol, newRow));
+				tempOutput.push_back(toInt(newCol, newRow));
 			}
 		}
+
+		if (bPiecesData[3][toInt(col-4,row)]==1&&(bPiecesData[5][toInt(4,7)])&&hasMoved==false){
+			
+		}else if((bPiecesData[3][toInt(col+3,row)]==1&&(bPiecesData[5][toInt(4,7)])&&hasMoved==false)){
+
+		}
+		
+		std::vector<int> checkSpaces{getAllMoves(color)};
+
+		for (int i{0}; i < tempOutput.size(); i++)
+		{
+			if (std::find(checkSpaces.begin(), checkSpaces.end(), tempOutput[i]) == checkSpaces.end())
+			{
+				output.push_back(tempOutput[i]);
+			}
+		}
+		
 	}
 
 	std::cout << type << " " << color << std::endl;
@@ -361,6 +389,24 @@ void Pieces::updateBoard()
 			}
 		}
 	}
+}
+
+/**
+ * gets all of
+the possible moves of the color provided*/
+std::vector<int> Pieces::getAllMoves(std::string color)
+{
+poppCc	std::vector<int> output{};
+
+	for (int i{0};i<64;i++)
+	{
+		if (bPiecesData[color == "black" ? 13 : 12][i] == 1)
+		{
+o			output.pushppCback(getPossibleMoves(i));
+		}
+c	}
+
+	return output;
 }
 
 /**
