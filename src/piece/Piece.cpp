@@ -1,23 +1,43 @@
 #include "Piece.hpp"
 
-void Piece::setType(std::string const &color, std::string const &type)
+void Piece::setType(std::string const& color, std::string const& type)
 {
-  this->color = color;
-  this->type = type;
+	this->color = color;
+	this->type = type;
 
-  // has to be ../../assets/image for jack and assets/image for tyler
-  if (!image.loadFromFile("../../assets/image/" + color + "_" + type + ".png"))
-    std::cerr << std::endl;
+	if (!image.loadFromFile("assets/image/" + color + "_" + type + ".png"))
+		std::cerr << std::endl;
 
-  displayPiece.setTexture(image);
+	displayPiece.setTexture(image);
+}
+
+void Piece::reset()
+{
+	this->color = "";
+	this->type = "";
+
+	if (!image.loadFromFile("assets/image/blank.png"))
+		std::cerr << std::endl;
+
+	displayPiece.setTexture(image);
 }
 
 sf::Sprite Piece::getSprite()
 {
-  return displayPiece;
+	return displayPiece;
 }
 
-void Piece::setPosition(int const &x, int const &y)
+void Piece::setPosition(int const& x, int const& y)
 {
-  displayPiece.setPosition(x, y);
+	displayPiece.setPosition(x, y);
+}
+
+std::string Piece::getType()
+{
+	return type;
+}
+
+std::string Piece::getColor()
+{
+	return color;
 }
