@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 /*
+
 TODO List:
 	PIECE MOVEMENT: (ez pz)
 	bug-fix and test castling
@@ -29,7 +30,15 @@ TODO List:
 	allow for resizing of the window
 
 	CODE:
+	optimize functions to be smaller and faster while still being very understandable
 	needs to be better optimized (learn how to use heap for memory management, and use the stack for the pieces) <- bro ai just suggested i do that, idek what the crap that means
+		*NOTE:
+			stack is memory that works fast, but is limited in size. You want small local vars to be on it (will destroy when out of scope).
+			(used whenever you create a var)
+		*NOTE:
+			heap is memory that works slower (still faster than any storage), but is dynamic in size. You want big vars to be on it.
+			(created with new keyword or smart pointers [smart pointers are better because they will destroy at certain points that you don't have to make])
+			harder to use because you need to deallocate memory
 
 DONE STUFF:
 	checking and movement for the king
