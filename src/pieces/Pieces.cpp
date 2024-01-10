@@ -1,14 +1,15 @@
 #include "Pieces.hpp"
+
 /**
- * creates the boards for the pieces (bitstrings)
+ * creates the boards for the pieces (bit-strings)
  * and sets all pieces for starting game (textures and such) accordingly
  */
 Pieces::Pieces()
 {
 	// creates a const pieceTypes
-	std::string const pieceTypes[6]{"pawn", "bishop", "knight", "rook", "queen", "king"};
+	std::string const pieceTypes[6]{ "pawn", "bishop", "knight", "rook", "queen", "king" };
 
-	// set the bitset (i.e. boards) for the game
+	// set the bit-set (i.e. boards) for the game
 	bPiecesData[0] = std::bitset<64>("0000000000000000000000000000000000000000000000001111111100000000");  // black pawn
 	bPiecesData[1] = std::bitset<64>("0000000000000000000000000000000000000000000000000000000000100100");  // black bishop
 	bPiecesData[2] = std::bitset<64>("0000000000000000000000000000000000000000000000000000000001000010");  // black knight
@@ -35,7 +36,7 @@ Pieces::Pieces()
  * @param row the row
  * @returns an int (0-63) representing positioning on the board
  */
-int Pieces::toInt(int const &col, int const &row)
+int Pieces::toInt(int const& col, int const& row)
 {
 	return (row * 8) + col;
 }
@@ -43,27 +44,28 @@ int Pieces::toInt(int const &col, int const &row)
 /**
  * takes the position and finds all possible moves for it
  * @param pos1 move to check
- * @returns an array of ints (0-63) representing possible moves
+ * @param checkingKing true if running while checking king (default value is false)
+ * @returns an array of integers (0-63) representing possible moves
  */
-std::vector<int> Pieces::getPossibleMoves(int const &pos)
+std::vector<int> Pieces::getPossibleMoves(int const& pos, bool checkingKing)
 {
 	// get the column and the row from the current position
 	int const col = pos % 8;
 	int const row = pos / 8;
 
 	// gets the type and color of the piece
-	std::string const color{piecesArr[col][row].getColor()};
-	std::string const type{piecesArr[col][row].getType()};
+	std::string const color{ piecesArr[col][row].getColor() };
+	std::string const type{ piecesArr[col][row].getType() };
 
 	// creates the output vector
 	std::vector<int> output{};
 
-	bool const hasMoved{true};
+	bool const hasMoved{ true };
 
 	// gets pawn moves
 	if (type == "pawn") // TODO need to add en passent
 	{
-		// needs to move up the board if white
+		// needs to move up the board if white (neg row)
 		if (color == "white")
 		{
 			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)] == 0)
@@ -74,26 +76,39 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				{
 					output.push_back(toInt(col, row - 2));
 				}
-				if ((bPiecesData[12])[toInt(col-1,row-1)]==1||bPiecesData[12][toInt(col+1,row-1)]==1){
-					output.push_back(toInt(col-1,row-1));
-					output.push_back(toInt(col+1,row-1));
-				}
+			}
+
+			// can capture diagonally
+			if ((bPiecesData[12])[toInt(col - 1, row - 1)] == 1)
+			{
+				output.push_back(toInt(col - 1, row - 1));
+			}
+			if (bPiecesData[12][toInt(col + 1, row - 1)] == 1)
+			{
+				output.push_back(toInt(col + 1, row - 1));
 			}
 		}
-		// needs to move down the board if black
+		// needs to move down the board if black (pos row)
 		else
 		{
 			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 1)] == 0)
 			{
 				output.push_back(toInt(col, row + 1));
-				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] == 0 && row == 2)
+
+				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] == 0 && row == 1)
 				{
-					output.push_back(toInt(col, row + 2)); 
+					output.push_back(toInt(col, row + 2));
 				}
-				if ((bPiecesData[13])[toInt(col-1,row+1)]==1||bPiecesData[13][toInt(col+1,row+1)]==1){
-					output.push_back(toInt(col-1,row+1));
-					output.push_back(toInt(col+1,row+1));
-				}
+			}
+
+			// can capture diagonally
+			if (bPiecesData[12][toInt(col - 1, row + 1)] == 1)
+			{
+				output.push_back(toInt(col - 1, row + 1));
+			}
+			if (bPiecesData[12][toInt(col + 1, row + 1)] == 1)
+			{
+				output.push_back(toInt(col + 1, row + 1));
 			}
 		}
 	}
@@ -101,14 +116,14 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "knight")
 	{
 		// creates a vector containing all possible knight moves
-		std::vector<std::pair<int, int>> directions{{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
+		std::vector<std::pair<int, int>> directions{ {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2} };
 
 		// checks each direction
-		for (auto &direction : directions)
+		for (auto& direction : directions)
 		{
 			// creates new col and row
-			int newCol{col + direction.first};
-			int newRow{row + direction.second};
+			int newCol{ col + direction.first };
+			int newRow{ row + direction.second };
 
 			// checks if is in range of board
 			if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -126,14 +141,14 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "bishop")
 	{
 		// each direction the piece can go
-		std::vector<std::pair<int, int>> directions{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
+		std::vector<std::pair<int, int>> directions{ {1, 1}, {-1, 1}, {-1, -1}, {1, -1} };
 
 		// checks each direction
-		for (auto &direction : directions)
+		for (auto& direction : directions)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + direction.first};
-			int newRow{row + direction.second};
+			int newCol{ col + direction.first };
+			int newRow{ row + direction.second };
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -148,7 +163,7 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				// add current check as possible move
 				output.push_back(toInt(newCol, newRow));
 
-				// checks if opponsent's piece is there (if so can go there)
+				// checks if opponent's piece is there (if so can go there)
 				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					// stops checking this direction
@@ -165,14 +180,14 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "rook")
 	{
 		// the directions this piece can move
-		std::vector<std::pair<int, int>> directions{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+		std::vector<std::pair<int, int>> directions{ {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
 
 		// checks each direction
-		for (auto &direction : directions)
+		for (auto& direction : directions)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + direction.first};
-			int newRow{row + direction.second};
+			int newCol{ col + direction.first };
+			int newRow{ row + direction.second };
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -187,7 +202,7 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				// add current check as possible move
 				output.push_back(toInt(newCol, newRow));
 
-				// checks if opponsent's piece is there (if so can go there)
+				// checks if opponent's piece is there (if so can go there)
 				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					// stops checking this direction
@@ -204,14 +219,14 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "queen")
 	{
 		// the directions this piece can move
-		std::vector<std::pair<int, int>> directions{{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
+		std::vector<std::pair<int, int>> directions{ {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1} };
 
 		// checks each direction
-		for (auto &direction : directions)
+		for (auto& direction : directions)
 		{
 			// keeps track of the columns and the rows
-			int newCol{col + direction.first};
-			int newRow{row + direction.second};
+			int newCol{ col + direction.first };
+			int newRow{ row + direction.second };
 
 			// iterates as long as they are inside of the range of the board
 			while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -226,7 +241,7 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 				// add current check as possible move
 				output.push_back(toInt(newCol, newRow));
 
-				// checks if opponsent's piece is there (if so can go there)
+				// checks if opponent's piece is there (if so can go there)
 				if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
 				{
 					// stops checking this direction
@@ -243,16 +258,16 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 	else if (type == "king") // TODO need to add castling
 	{
 		std::vector<int> tempOutput{};
-		
+
 		// creates a vector containing all possible knight moves
-		std::vector<std::pair<int, int>> directions{{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
-		
+		std::vector<std::pair<int, int>> directions{ {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1} };
+
 		// checks each direction
-		for (auto &direction : directions)
+		for (auto& direction : directions)
 		{
 			// creates new col and row
-			int newCol{col + direction.first};
-			int newRow{row + direction.second};
+			int newCol{ col + direction.first };
+			int newRow{ row + direction.second };
 
 			// checks if is in range of board
 			if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
@@ -266,22 +281,28 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 			}
 		}
 
-		if (bPiecesData[3][toInt(col-4,row)]==1&&(bPiecesData[5][toInt(4,7)])&&hasMoved==false){
-			
-		}else if((bPiecesData[3][toInt(col+3,row)]==1&&(bPiecesData[5][toInt(4,7)])&&hasMoved==false)){
-
+		/*
+		if (bPiecesData[3][toInt(col - 4, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false) {
 		}
-		
-		std::vector<int> checkSpaces{getAllMoves(color)};
+		else if ((bPiecesData[3][toInt(col + 3, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false)) {
+		}
+		*/
 
-		for (int i{0}; i < tempOutput.size(); i++)
+		// gets all of the possible moves for the other color
+		if (!checkingKing)
 		{
-			if (std::find(checkSpaces.begin(), checkSpaces.end(), tempOutput[i]) == checkSpaces.end())
+			std::vector<int> checkSpaces{ getAllMoves(color == "white" ? "black" : "white") };
+
+			// removes all moves that are in check
+			for (int i{ 0 }; i < tempOutput.size(); i++)
 			{
-				output.push_back(tempOutput[i]);
+				// if not in check
+				if (std::find(checkSpaces.begin(), checkSpaces.end(), tempOutput[i]) == checkSpaces.end())
+				{
+					output.push_back(tempOutput[i]);
+				}
 			}
 		}
-		
 	}
 
 	std::cout << type << " " << color << std::endl;
@@ -289,7 +310,7 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 
 	if (!output.empty())
 	{
-		for (int i{0}; i < output.size(); i++)
+		for (int i{ 0 }; i < output.size(); i++)
 		{
 			std::cout << output[i] << std::endl;
 		}
@@ -299,27 +320,27 @@ std::vector<int> Pieces::getPossibleMoves(int const &pos)
 }
 
 /**
- * changes the bitsets that represent the board
+ * changes the bit-sets that represent the board
  * @param pos1 takes in the old position
  * @param pos2 takes in new position
  */
-void Pieces::movePiece(int &pos1, int &pos2)
+void Pieces::movePiece(int& pos1, int& pos2)
 {
 	// create vector with types of moves (helps with choosing from bPiecesData)
-	std::vector<std::string> const boardTypeArr{"pawn", "bishop", "knight", "rook", "queen", "king"};
+	std::vector<std::string> const boardTypeArr{ "pawn", "bishop", "knight", "rook", "queen", "king" };
 
 	// create a bit value representing each of the pieces we are moving
-	std::bitset<64> bPos1{"0000000000000000000000000000000000000000000000000000000000000001"};
+	std::bitset<64> bPos1{ "0000000000000000000000000000000000000000000000000000000000000001" };
 	bPos1 = bPos1 << pos1;
 
-	std::bitset<64> bPos2{"0000000000000000000000000000000000000000000000000000000000000001"};
+	std::bitset<64> bPos2{ "0000000000000000000000000000000000000000000000000000000000000001" };
 	bPos2 = bPos2 << pos2;
 
 	// move its own piece
-	std::string color{piecesArr[pos1 % 8][pos1 / 8].getColor()};
-	std::string type{piecesArr[pos1 % 8][pos1 / 8].getType()};
+	std::string color{ piecesArr[pos1 % 8][pos1 / 8].getColor() };
+	std::string type{ piecesArr[pos1 % 8][pos1 / 8].getType() };
 
-	int board{int(find(boardTypeArr.begin(), boardTypeArr.end(), type) - boardTypeArr.begin())};
+	int board{ int(find(boardTypeArr.begin(), boardTypeArr.end(), type) - boardTypeArr.begin()) };
 	board += color == "white" ? 6 : 0;
 
 	bPiecesData[board] = bPiecesData[board] ^ bPos1;
@@ -357,22 +378,22 @@ void Pieces::movePiece(int &pos1, int &pos2)
 void Pieces::updateBoard()
 {
 	// outlines the types of pieces for easy sorting
-	std::string const pieceTypes[6]{"pawn", "bishop", "knight", "rook", "queen", "king"};
+	std::string const pieceTypes[6]{ "pawn", "bishop", "knight", "rook", "queen", "king" };
 
 	// resets them all
-	for (int i{0}; i < 8; i++)
+	for (int i{ 0 }; i < 8; i++)
 	{
-		for (int j{0}; j < 8; j++)
+		for (int j{ 0 }; j < 8; j++)
 		{
 			piecesArr[i][j].reset();
 		}
 	}
 
-	// looping through all the bitsets
-	for (int i{0}; i < 12; i++)
+	// looping through all the bit-sets
+	for (int i{ 0 }; i < 12; i++)
 	{
 		// looping through all of the individual bits
-		for (int j{0}; j < 64; j++)
+		for (int j{ 0 }; j < 64; j++)
 		{
 			// constants for column and row
 			int const col = j % 8;
@@ -391,21 +412,28 @@ void Pieces::updateBoard()
 	}
 }
 
-/**
- * gets all of
-the possible moves of the color provided*/
+/*
+* gets all of the possible moves of the color provided
+*/
 std::vector<int> Pieces::getAllMoves(std::string color)
 {
-poppCc	std::vector<int> output{};
+	// creates the output vector
+	std::vector<int> output{};
 
-	for (int i{0};i<64;i++)
+	// loops through the board
+	for (int i{ 0 }; i < 64; i++)
 	{
-		if (bPiecesData[color == "black" ? 13 : 12][i] == 1)
+		// if there is a piece there
+		std::cout << i << " " << bPiecesData[color == "white" ? 13 : 12][i] << std::endl;
+		if (bPiecesData[color == "white" ? 13 : 12][i] == 1)
 		{
-			output.pushppCback(getPossibleMoves(i));
+			// gets the possible moves and add them to the output
+			std::vector<int> possibleMoves = getPossibleMoves(i, true);
+			output.insert(output.end(), possibleMoves.begin(), possibleMoves.end());
 		}
 	}
 
+	// returns the output
 	return output;
 }
 
@@ -413,23 +441,16 @@ poppCc	std::vector<int> output{};
  * draws the pieces using window.draw
  * @param window takes in the window as a reference to use in the display process
  */
-void Pieces::displayPieces(sf::RenderWindow &window)
+void Pieces::displayPieces(sf::RenderWindow& window)
 {
-	// loops through the columns and rows
-	for (int i{0}; i < 8; i++)
+	// loops through the columns
+	for (int i{ 0 }; i < 8; i++)
 	{
-		for (int j{0}; j < 8; j++)
+		// loops through the rows
+		for (int j{ 0 }; j < 8; j++)
 		{
+			// draws the sprite
 			window.draw(piecesArr[i][j].getSprite());
 		}
 	}
-}
-
-/**
- * returns the piecesArr
- * @returns len: 8 | type: Piece
- */
-Piece (*Pieces::getPieces())[8]
-{
-	return piecesArr;
 }
