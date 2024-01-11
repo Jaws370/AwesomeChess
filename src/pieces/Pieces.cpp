@@ -284,17 +284,56 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 			}
 		}
 
-		/*
-		if (bPiecesData[3][toInt(col - 4, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false) {
+		//castling
+		//white
+		// check if currently under check, if so cannot move
+		std::vector<int> checkSpaces{};
+		std::vector<int> opponentsMoves{getAllMoves(color == "white" ? "black" : "white")};
+
+		if(color=="white"){
+		if (bPiecesData[3][toInt(col - 4, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false 
+		    && (bPiecesData[12][toInt(col-1,row)]==0 || bPiecesData[13][toInt(col-1,row)]==0)
+			&& (bPiecesData[12][toInt(col-2,row)]==0 || bPiecesData[13][toInt(col-2,row)]==0)
+			&& (bPiecesData[12][toInt(col-3,row)]==0 || bPiecesData[13][toInt(col-3,row)]==0))
+		{
+			checkSpaces = {59, 60};
+			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
+				tempOutput.push_back(toInt(col-2,row));
 		}
-		else if ((bPiecesData[3][toInt(col + 3, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false)) {
+		else if (bPiecesData[3][toInt(col + 3, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false 
+		    && (bPiecesData[12][toInt(col+1,row)]==0 || bPiecesData[13][toInt(col+1,row)]==0)
+			&& (bPiecesData[12][toInt(col+2,row)]==0 || bPiecesData[13][toInt(col+2,row)]==0)) 	
+		{
+			checkSpaces = {62, 63};
+			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
+				tempOutput.push_back(toInt(col+2,row));
 		}
-		*/
+		//black
+		}else
+		{
+			if (bPiecesData[9][toInt(col - 4, row)] == 1 && (bPiecesData[11][toInt(4, 0)]) && hasMoved == false 
+		    && (bPiecesData[12][toInt(col-1,row)]==0 || bPiecesData[13][toInt(col-1,row)]==0)
+			&& (bPiecesData[12][toInt(col-2,row)]==0 || bPiecesData[13][toInt(col-2,row)]==0)
+			&& (bPiecesData[12][toInt(col-3,row)]==0 || bPiecesData[13][toInt(col-3,row)]==0))
+		{
+			checkSpaces = {3, 4};
+			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
+				tempOutput.push_back(toInt(col-2,row));
+		}
+		else if (bPiecesData[9][toInt(col + 3, row)] == 1 && (bPiecesData[11][toInt(4, 0)]) && hasMoved == false 
+		    && (bPiecesData[12][toInt(col+1,row)]==0 || bPiecesData[13][toInt(col+1,row)]==0)
+			&& (bPiecesData[12][toInt(col+2,row)]==0 || bPiecesData[13][toInt(col+2,row)]==0)) 	
+		{
+			checkSpaces = {6, 7};
+			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
+				tempOutput.push_back(toInt(col+2,row));
+		}
+		}
 
 		// gets all of the possible moves for the other color
 		if (!checkingKing)
 		{
-			std::vector<int> checkSpaces{ getAllMoves(color == "white" ? "black" : "white") };
+			std::vector<int> checkSpaces{getAllMoves(color == "white" ? "black" : "white") };
 
 			// removes all moves that are in check
 			for (int i{ 0 }; i < tempOutput.size(); i++)
