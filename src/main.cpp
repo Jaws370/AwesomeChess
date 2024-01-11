@@ -28,22 +28,16 @@ TODO List:
 
 	USER INPUT:
 	allow for the chess pieces to be dragged and point-and-click
-	allow for resizing of the window
+	allow for resizing of the window <- jack is working on this
 
 	CODE:
 	optimize functions to be smaller and faster while still being very understandable
-	needs to be better optimized (learn how to use heap for memory management, and use the stack for the pieces) <- bro ai just suggested i do that, idek what the crap that means
-		*NOTE:
-			stack is memory that works fast, but is limited in size. You want small local vars to be on it (will destroy when out of scope).
-			(used whenever you create a var)
-		*NOTE:
-			heap is memory that works slower (still faster than any storage), but is dynamic in size. You want big vars to be on it.
-			(created with new keyword or smart pointers [smart pointers are better because they will destroy at certain points that you don't have to make])
-			harder to use because you need to deallocate memory
+	needs to be better optimized memory wise
 
 DONE STUFF:
 	checking and movement for the king
 	added user input class
+	added board and pieces to heap to limit stack size
 
 */
 
@@ -64,19 +58,26 @@ int main()
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
-			// check if mouse buttons have been pressed
-			if (event.type == sf::Event::MouseButtonPressed)
+			switch (event.type)
 			{
+			// check if mouse buttons have been pressed
+			case sf::Event::MouseButtonPressed:
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
 					// get the position of the mouse and send it to be handled
 					in.handleLeftClick(sf::Mouse::getPosition(window), *pieces);
 				}
-			}
-
+				break;
 			// "close requested" event: we close the window
-			if (event.type == sf::Event::Closed)
+			case sf::Event::Closed:
 				window.close();
+				break;
+			case sf::Event::Resized:
+				in.handleWindowResize(window, *board);
+				break;
+			default:
+				break;
+			}
 			// TODO need to add code to change board and pieces in case of resizing
 		}
 

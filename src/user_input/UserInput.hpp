@@ -2,6 +2,7 @@
 #define USER_INPUT_HPP
 
 #include "../pieces/Pieces.hpp"
+#include "../board/Board.hpp"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
@@ -14,6 +15,7 @@ class UserInput
 {
 public:
 	void handleLeftClick(const sf::Vector2i& mousePosition, Pieces& pieces);
+	void handleWindowResize(sf:RenderWindow& window, Board& board);
 private:
 	std::pair<int, int> moves{ -1, -1 };
 	std::vector<int> possibleMoves{};

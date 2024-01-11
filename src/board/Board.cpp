@@ -2,13 +2,13 @@
 
 Board::Board()
 {
+  setSize(512);
+
   for (int i{0}; i < 8; i++)
   {
     for (int j{0}; j < 8; j++)
     {
       bool color{(i + j) % 2 == 0};
-      rectArr[i][j].setSize(sf::Vector2f(boardSize / 8.f, boardSize / 8.f));
-      rectArr[i][j].setPosition(i * boardSize / 8.f, j * boardSize / 8.f);
       if (color)
       {
         rectArr[i][j].setFillColor(sf::Color(118, 150, 86));
@@ -17,6 +17,20 @@ Board::Board()
       {
         rectArr[i][j].setFillColor(sf::Color(238, 238, 210));
       }
+    }
+  }
+}
+
+void Board::setSize(const int& boardSize)
+{
+  boardSize->boardSize;
+
+  for (int i{0}; i < 8; i++)
+  {
+    for (int j{0}; j < 8; j++)
+    {
+      rectArr[i][j].setSize(sf::Vector2f(boardSize / 8.f, boardSize / 8.f));
+      rectArr[i][j].setPosition(i * boardSize / 8.f, j * boardSize / 8.f);
     }
   }
 }
