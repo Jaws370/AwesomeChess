@@ -1,6 +1,6 @@
 # vscode ignores
+.vs
 .vscode
 /build
 /bin
 CMakeSettings.json
-.vs
