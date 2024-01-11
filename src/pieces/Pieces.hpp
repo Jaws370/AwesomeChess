@@ -2,9 +2,8 @@
 #define PIECES_HPP
 
 #include "../piece/Piece.hpp"
-#include "Pieces.hpp"
-#include <iostream>
 #include <bitset>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 class Pieces
@@ -15,10 +14,10 @@ private:
 
 public:
 	Pieces();
-	std::vector<int> getPossibleMoves(int const& pos, bool checkingKing = false);
+	std::vector<int> getPossibleMoves(const int& pos, const bool checkingKing = false);
 	void movePiece(int& pos1, int& pos2);
 	void displayPieces(sf::RenderWindow& window);
-	static int toInt(int const& col, int const& row);
+	static int toInt(const int& col, const int& row);
 	std::vector<int> getAllMoves(std::string color);
 	void updateBoard();
 };

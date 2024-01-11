@@ -7,7 +7,7 @@
 Pieces::Pieces()
 {
 	// creates a const pieceTypes
-	std::string const pieceTypes[6]{ "pawn", "bishop", "knight", "rook", "queen", "king" };
+	const std::string pieceTypes[6]{ "pawn", "bishop", "knight", "rook", "queen", "king" };
 
 	// set the bit-set (i.e. boards) for the game
 	bPiecesData[0] = std::bitset<64>("0000000000000000000000000000000000000000000000001111111100000000");  // black pawn
@@ -29,14 +29,13 @@ Pieces::Pieces()
 }
 
 /**
- * ! created for the getPossibleMoves method
  * takes the column and the row and returns an int (0-63)
  * of that position on the board
  * @param col the column
  * @param row the row
  * @returns an int (0-63) representing positioning on the board
  */
-int Pieces::toInt(int const& col, int const& row)
+int Pieces::toInt(const int& col, const int& row)
 {
 	return (row * 8) + col;
 }
@@ -47,38 +46,40 @@ int Pieces::toInt(int const& col, int const& row)
  * @param checkingKing true if running while checking king (default value is false)
  * @returns an array of integers (0-63) representing possible moves
  */
-std::vector<int> Pieces::getPossibleMoves(int const& pos, bool checkingKing)
+std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 {
 	// get the column and the row from the current position
-	int const col = pos % 8;
-	int const row = pos / 8;
+	const int col = pos % 8;
+	const int row = pos / 8;
 
 	// gets the type and color of the piece
-	std::string const color{ piecesArr[col][row].getColor() };
-	std::string const type{ piecesArr[col][row].getType() };
+	const std::string color{ piecesArr[col][row].getColor() };
+	const std::string type{ piecesArr[col][row].getType() };
 
 	// creates the output vector
 	std::vector<int> output{};
 
-	bool const hasMoved{ true };
+	const bool hasMoved{ true };
 
 	// gets pawn moves
-	if (type == "pawn") // TODO need to add en passent
+	if (type == "pawn") // TODO need to add en-passant
 	{
 		// needs to move up the board if white (neg row)
 		if (color == "white")
 		{
+			// check if it can move one space forward
 			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)] == 0)
 			{
 				output.push_back(toInt(col, row - 1));
 
+				// check if it can move two spaces forward
 				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] == 0 && row == 6)
 				{
 					output.push_back(toInt(col, row - 2));
 				}
 			}
 
-			// can capture diagonally
+			// check if it can capture diagonally
 			if ((bPiecesData[12])[toInt(col - 1, row - 1)] == 1)
 			{
 				output.push_back(toInt(col - 1, row - 1));
@@ -91,17 +92,19 @@ std::vector<int> Pieces::getPossibleMoves(int const& pos, bool checkingKing)
 		// needs to move down the board if black (pos row)
 		else
 		{
+			// check if it can move one space forward
 			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 1)] == 0)
 			{
 				output.push_back(toInt(col, row + 1));
 
+				// check if it can move two spaces forward
 				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] == 0 && row == 1)
 				{
 					output.push_back(toInt(col, row + 2));
 				}
 			}
 
-			// can capture diagonally
+			// check if it can capture diagonally
 			if (bPiecesData[12][toInt(col - 1, row + 1)] == 1)
 			{
 				output.push_back(toInt(col - 1, row + 1));
@@ -327,7 +330,7 @@ std::vector<int> Pieces::getPossibleMoves(int const& pos, bool checkingKing)
 void Pieces::movePiece(int& pos1, int& pos2)
 {
 	// create vector with types of moves (helps with choosing from bPiecesData)
-	std::vector<std::string> const boardTypeArr{ "pawn", "bishop", "knight", "rook", "queen", "king" };
+	const std::vector<std::string> boardTypeArr{ "pawn", "bishop", "knight", "rook", "queen", "king" };
 
 	// create a bit value representing each of the pieces we are moving
 	std::bitset<64> bPos1{ "0000000000000000000000000000000000000000000000000000000000000001" };
@@ -378,7 +381,7 @@ void Pieces::movePiece(int& pos1, int& pos2)
 void Pieces::updateBoard()
 {
 	// outlines the types of pieces for easy sorting
-	std::string const pieceTypes[6]{ "pawn", "bishop", "knight", "rook", "queen", "king" };
+	const std::string pieceTypes[6]{ "pawn", "bishop", "knight", "rook", "queen", "king" };
 
 	// resets them all
 	for (int i{ 0 }; i < 8; i++)
@@ -396,8 +399,8 @@ void Pieces::updateBoard()
 		for (int j{ 0 }; j < 64; j++)
 		{
 			// constants for column and row
-			int const col = j % 8;
-			int const row = j / 8;
+			const int col = j % 8;
+			const int row = j / 8;
 
 			// if there is a piece there (else there should be no type)
 			if (bPiecesData[i][j] == 1)

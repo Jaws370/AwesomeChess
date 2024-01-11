@@ -1,6 +1,7 @@
 #include "./board/Board.hpp"
 #include "./piece/Piece.hpp"
 #include "./pieces/Pieces.hpp"
+#include "./user_input/UserInput.hpp"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
@@ -25,7 +26,7 @@ TODO List:
 	letters and numbers on the edge of the board, labeled 1-8 on the left column and a-h on the bottom row
 	when a piece moves to a new square, make the old position and new position a lighter green if it is on a green square, and slightly yellow if on a white square
 
-	USER INPUT: (create new class?)
+	USER INPUT:
 	allow for the chess pieces to be dragged and point-and-click
 	allow for resizing of the window
 
@@ -42,16 +43,17 @@ TODO List:
 
 DONE STUFF:
 	checking and movement for the king
+	added user input class
 
 */
 
 int main()
 {
-	Board board;
-	Pieces pieces;
+	// unique pointers for board and pieces (allocates memory on the heap)
+	std::unique_ptr board = std::make_unique<Board>();
+	std::unique_ptr pieces = std::make_unique<Pieces>();
 
-	std::pair<int, int> moves{ -1, -1 };
-	std::vector<int> possibleMoves{};
+	UserInput in;
 
 	sf::RenderWindow window(sf::VideoMode(512, 512), "AwesomeChess");
 
@@ -65,61 +67,25 @@ int main()
 			// check if mouse buttons have been pressed
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
-				sf::Vector2i position = sf::Mouse::getPosition(window);
-				int col{};
-				int row{};
-
-				// saves the column that the mouse clicks to a variable column
-				for (int i{ 1 }; i <= 8; i++)
+				if (event.mouseButton.button == sf::Mouse::Left)
 				{
-					if (position.x <= 64 * i)
-					{
-						col = --i;
-						break;
-					}
-				}
-
-				// saves the row that the mouse clicks to a variable row
-				for (int i{ 1 }; i <= 8; i++)
-				{
-					if (position.y <= 64 * i)
-					{
-						row = --i;
-						break;
-					}
-				}
-
-				if (moves.first == -1)
-				{
-					std::cout << "move 1" << std::endl;
-					moves.first = pieces.toInt(col, row);
-					possibleMoves = pieces.getPossibleMoves(pieces.toInt(col, row));
-				}
-				else
-				{
-					std::cout << "move 2" << std::endl;
-					moves.second = pieces.toInt(col, row);
-					if (std::find(possibleMoves.begin(), possibleMoves.end(), moves.second) != possibleMoves.end())
-					{
-						pieces.movePiece(moves.first, moves.second);
-						pieces.updateBoard();
-					}
-					moves = { -1, -1 };
+					// get the position of the mouse and send it to be handled
+					in.handleLeftClick(sf::Mouse::getPosition(window), *pieces);
 				}
 			}
 
 			// "close requested" event: we close the window
 			if (event.type == sf::Event::Closed)
 				window.close();
-			// need to add code to change board in case of resizing and change position of pieces
+			// TODO need to add code to change board and pieces in case of resizing
 		}
 
 		// clear the window with a black color
 		window.clear(sf::Color::Black);
 
 		// draw all of the parts of the game
-		board.displayBoard(window);
-		pieces.displayPieces(window);
+		board->displayBoard(window);
+		pieces->displayPieces(window);
 
 		// display the window contents on screen
 		window.display();
