@@ -114,6 +114,20 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 				output.push_back(toInt(col + 1, row + 1));
 			}
 		}
+			 // en passant
+  	if (color == "white") {
+ 	    if (lastMove % 8 == col && lastMove / 8 == 4 && row == 5) {
+     	   if (bPiecesData[0][toInt(col, 4)] == 1) {
+     	      output.push_back(toInt(col, 5));
+     	   }
+   	  }
+ 	 } else { // black pawn
+    	 if (lastMove % 8 == col && lastMove / 8 == 3 && row == 2) {
+     	   if (bPiecesData[6][toInt(col, 3)] == 1) {
+  	         output.push_back(toInt(col, 2));
+      	  }
+   	  }
+ 	 }
 	}
 	// gets knight moves
 	else if (type == "knight")
@@ -296,6 +310,7 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 			&& (bPiecesData[12][toInt(col-2,row)]==0 || bPiecesData[13][toInt(col-2,row)]==0)
 			&& (bPiecesData[12][toInt(col-3,row)]==0 || bPiecesData[13][toInt(col-3,row)]==0))
 		{
+			//checking if any piece is currently attacking the 2 squares required to castle
 			checkSpaces = {59, 60};
 			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
 				tempOutput.push_back(toInt(col-2,row));
@@ -303,7 +318,8 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 		else if (bPiecesData[3][toInt(col + 3, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false 
 		    && (bPiecesData[12][toInt(col+1,row)]==0 || bPiecesData[13][toInt(col+1,row)]==0)
 			&& (bPiecesData[12][toInt(col+2,row)]==0 || bPiecesData[13][toInt(col+2,row)]==0)) 	
-		{
+		{			
+			//checking if any piece is currently attacking the 2 squares required to castle
 			checkSpaces = {62, 63};
 			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
 				tempOutput.push_back(toInt(col+2,row));
@@ -316,6 +332,7 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 			&& (bPiecesData[12][toInt(col-2,row)]==0 || bPiecesData[13][toInt(col-2,row)]==0)
 			&& (bPiecesData[12][toInt(col-3,row)]==0 || bPiecesData[13][toInt(col-3,row)]==0))
 		{
+			//checking if any piece is currently attacking the 2 squares required to castle
 			checkSpaces = {3, 4};
 			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
 				tempOutput.push_back(toInt(col-2,row));
@@ -324,6 +341,7 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 		    && (bPiecesData[12][toInt(col+1,row)]==0 || bPiecesData[13][toInt(col+1,row)]==0)
 			&& (bPiecesData[12][toInt(col+2,row)]==0 || bPiecesData[13][toInt(col+2,row)]==0)) 	
 		{
+			//checking if any piece is currently attacking the 2 squares required to castle			
 			checkSpaces = {6, 7};
 			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
 				tempOutput.push_back(toInt(col+2,row));
