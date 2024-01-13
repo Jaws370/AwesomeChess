@@ -59,7 +59,7 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 	// creates the output vector
 	std::vector<int> output{};
 
-	const bool hasMoved{ true };
+	const bool hasMoved{ false }; // TODO add logic to check if piece has moved (if king, need to check rooks too!)
 
 	// gets pawn moves
 	if (type == "pawn") // TODO need to add en-passant
@@ -114,20 +114,25 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 				output.push_back(toInt(col + 1, row + 1));
 			}
 		}
-			 // en passant
-  	if (color == "white") {
- 	    if (lastMove % 8 == col && lastMove / 8 == 4 && row == 5) {
-     	   if (bPiecesData[0][toInt(col, 4)] == 1) {
-     	      output.push_back(toInt(col, 5));
-     	   }
-   	  }
- 	 } else { // black pawn
-    	 if (lastMove % 8 == col && lastMove / 8 == 3 && row == 2) {
-     	   if (bPiecesData[6][toInt(col, 3)] == 1) {
-  	         output.push_back(toInt(col, 2));
-      	  }
-   	  }
- 	 }
+		/* en passant
+		if (color == "white")
+		{
+			if (lastMove % 8 == col && lastMove / 8 == 4 && row == 5)
+			{
+				if (bPiecesData[0][toInt(col, 4)] == 1) {
+					output.push_back(toInt(col, 5));
+				}
+			}
+		}
+		else { // black pawn
+			if (lastMove % 8 == col && lastMove / 8 == 3 && row == 2)
+			{
+				if (bPiecesData[6][toInt(col, 3)] == 1)
+				{
+					output.push_back(toInt(col, 2));
+				}
+			}
+		}*/
 	}
 	// gets knight moves
 	else if (type == "knight")
@@ -298,66 +303,139 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 			}
 		}
 
-		//castling
-		//white
-		// check if currently under check, if so cannot move
-		std::vector<int> checkSpaces{};
-		std::vector<int> opponentsMoves{getAllMoves(color == "white" ? "black" : "white")};
-
-		if(color=="white"){
-		if (bPiecesData[3][toInt(col - 4, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false 
-		    && (bPiecesData[12][toInt(col-1,row)]==0 || bPiecesData[13][toInt(col-1,row)]==0)
-			&& (bPiecesData[12][toInt(col-2,row)]==0 || bPiecesData[13][toInt(col-2,row)]==0)
-			&& (bPiecesData[12][toInt(col-3,row)]==0 || bPiecesData[13][toInt(col-3,row)]==0))
-		{
-			//checking if any piece is currently attacking the 2 squares required to castle
-			checkSpaces = {59, 60};
-			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
-				tempOutput.push_back(toInt(col-2,row));
-		}
-		else if (bPiecesData[3][toInt(col + 3, row)] == 1 && (bPiecesData[5][toInt(4, 7)]) && hasMoved == false 
-		    && (bPiecesData[12][toInt(col+1,row)]==0 || bPiecesData[13][toInt(col+1,row)]==0)
-			&& (bPiecesData[12][toInt(col+2,row)]==0 || bPiecesData[13][toInt(col+2,row)]==0)) 	
-		{			
-			//checking if any piece is currently attacking the 2 squares required to castle
-			checkSpaces = {62, 63};
-			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
-				tempOutput.push_back(toInt(col+2,row));
-		}
-		//black
-		}else
-		{
-			if (bPiecesData[9][toInt(col - 4, row)] == 1 && (bPiecesData[11][toInt(4, 0)]) && hasMoved == false 
-		    && (bPiecesData[12][toInt(col-1,row)]==0 || bPiecesData[13][toInt(col-1,row)]==0)
-			&& (bPiecesData[12][toInt(col-2,row)]==0 || bPiecesData[13][toInt(col-2,row)]==0)
-			&& (bPiecesData[12][toInt(col-3,row)]==0 || bPiecesData[13][toInt(col-3,row)]==0))
-		{
-			//checking if any piece is currently attacking the 2 squares required to castle
-			checkSpaces = {3, 4};
-			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
-				tempOutput.push_back(toInt(col-2,row));
-		}
-		else if (bPiecesData[9][toInt(col + 3, row)] == 1 && (bPiecesData[11][toInt(4, 0)]) && hasMoved == false 
-		    && (bPiecesData[12][toInt(col+1,row)]==0 || bPiecesData[13][toInt(col+1,row)]==0)
-			&& (bPiecesData[12][toInt(col+2,row)]==0 || bPiecesData[13][toInt(col+2,row)]==0)) 	
-		{
-			//checking if any piece is currently attacking the 2 squares required to castle			
-			checkSpaces = {6, 7};
-			if (!std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end()).empty())
-				tempOutput.push_back(toInt(col+2,row));
-		}
-		}
-
-		// gets all of the possible moves for the other color
+		// if not checking for all the possible opponents moves
 		if (!checkingKing)
 		{
-			std::vector<int> checkSpaces{getAllMoves(color == "white" ? "black" : "white") };
+			// castling
+			// TODO if currently under check, if so cannot move, need to update rooks (somehow)
+			std::vector<int> checkSpaces{};
+			std::vector<int> opponentsMoves{ getAllMoves(color == "white" ? "black" : "white") };
+
+			if (color == "white") {
+				if (!hasMoved
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)]))
+				{
+					//checking if any piece is currently attacking the 2 squares required to castle
+					checkSpaces = { 57, 58 };
+
+					// vector for duplicate checking
+					std::vector<int> duplicates{};
+
+					// sort them for set_intersection
+					std::sort(checkSpaces.begin(), checkSpaces.end());
+					std::sort(opponentsMoves.begin(), opponentsMoves.end());
+
+					// make sure opponentsMoves is not empty
+					if (!opponentsMoves.empty())
+					{
+						// find any duplicates
+						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
+					}
+
+					// if there are no duplicates
+					if (duplicates.empty())
+					{
+						tempOutput.push_back(57);
+					}
+				}
+				else if (!hasMoved
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 1, row)])
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 2, row)])
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 3, row)]))
+				{
+					//checking if any piece is currently attacking the 2 squares required to castle
+					checkSpaces = { 60, 61, 62 };
+
+					// vector for duplicate checking
+					std::vector<int> duplicates{};
+
+					// sort them for set_intersection
+					std::sort(checkSpaces.begin(), checkSpaces.end());
+					std::sort(opponentsMoves.begin(), opponentsMoves.end());
+
+					// make sure opponentsMoves is not empty
+					if (!opponentsMoves.empty())
+					{
+						// find any duplicates
+						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
+					}
+
+					// if there are no duplicates
+					if (duplicates.empty())
+					{
+						tempOutput.push_back(61);
+					}
+				}
+				//black
+			}
+			else
+			{
+				if (!hasMoved
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)]))
+				{
+					//checking if any piece is currently attacking the 2 squares required to castle
+					checkSpaces = { 1, 2 };
+
+					// vector for duplicate checking
+					std::vector<int> duplicates{};
+
+					// sort them for set_intersection
+					std::sort(checkSpaces.begin(), checkSpaces.end());
+					std::sort(opponentsMoves.begin(), opponentsMoves.end());
+
+					// make sure opponentsMoves is not empty
+					if (!opponentsMoves.empty())
+					{
+						// find any duplicates
+						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
+					}
+
+					// if there are no duplicates
+					if (duplicates.empty())
+					{
+						tempOutput.push_back(1);
+					}
+				}
+				else if (!hasMoved
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 1, row)])
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 2, row)])
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 3, row)]))
+				{
+					//checking if any piece is currently attacking the 2 squares required to castle
+					checkSpaces = { 4, 5, 6 };
+
+					// vector for duplicate checking
+					std::vector<int> duplicates{};
+
+					// sort them for set_intersection
+					std::sort(checkSpaces.begin(), checkSpaces.end());
+					std::sort(opponentsMoves.begin(), opponentsMoves.end());
+
+					// make sure opponentsMoves is not empty
+					if (!opponentsMoves.empty())
+					{
+						// find any duplicates
+						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
+					}
+
+					// if there are no duplicates
+					if (duplicates.empty())
+					{
+						tempOutput.push_back(7);
+					}
+				}
+			}
+
+			// finds out if a space would be under check
+			std::vector<int> checkSpaces1{ getAllMoves(color == "white" ? "black" : "white") };
 
 			// removes all moves that are in check
 			for (int i{ 0 }; i < tempOutput.size(); i++)
 			{
 				// if not in check
-				if (std::find(checkSpaces.begin(), checkSpaces.end(), tempOutput[i]) == checkSpaces.end())
+				if (std::find(checkSpaces1.begin(), checkSpaces1.end(), tempOutput[i]) == checkSpaces1.end())
 				{
 					output.push_back(tempOutput[i]);
 				}

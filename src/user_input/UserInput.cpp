@@ -46,7 +46,7 @@ void UserInput::handleLeftClick(const sf::Vector2i& mousePosition, Pieces& piece
 // also need to make sure that the window will change to always be the correct shape (square for now)
 void UserInput::handleWindowResize(sf::RenderWindow& window, Board& board)
 {
-	if (window.getSize.x > window.getSize.y)
+	if (window.getSize().x > window.getSize().y)
 	{
 		board.setSize(window.getSize().x);
 	}
