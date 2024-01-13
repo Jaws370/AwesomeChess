@@ -8,9 +8,9 @@
 /*
 
 TODO List:
-	PIECE MOVEMENT: (ez pz)
-	bug-fix and test castling
-	add en passant
+	PIECE MOVEMENT:
+	somehow move the rook while castling
+	add en passant <- big tyrone working on
 	add computer to play against
 
 	AUDIO: (can be done in pieces.cpp, but need to import audio from sfml)
@@ -31,13 +31,14 @@ TODO List:
 	allow for resizing of the window <- jack is working on this
 
 	CODE:
-	optimize functions to be smaller and faster while still being very understandable
+	optimize functions to be smaller and faster while still being very understandable <- change getPossibleMoves to be more functional programming (higher order functions?)
 	needs to be better optimized memory wise
 
 DONE STUFF:
 	checking and movement for the king
 	added user input class
 	added board and pieces to heap to limit stack size
+	king now recognizes castling
 
 */
 
@@ -60,7 +61,7 @@ int main()
 		{
 			switch (event.type)
 			{
-			// check if mouse buttons have been pressed
+				// check if mouse buttons have been pressed
 			case sf::Event::MouseButtonPressed:
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
@@ -68,12 +69,12 @@ int main()
 					in.handleLeftClick(sf::Mouse::getPosition(window), *pieces);
 				}
 				break;
-			// "close requested" event: we close the window
+				// "close requested" event: we close the window
 			case sf::Event::Closed:
 				window.close();
 				break;
-			case sf::Event::Resized:
-				in.handleWindowResize(window, *board);
+			case sf::Event::Resized: // TODO need to fix resizing of the window... its doing something weird rn and need to check sfml docs
+				//in.handleWindowResize(window, *board);
 				break;
 			default:
 				break;
