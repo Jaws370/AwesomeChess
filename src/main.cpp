@@ -10,7 +10,6 @@
 TODO List:
 	PIECE MOVEMENT:
 	somehow move the rook while castling
-	add en passant <- big tyrone working on
 	add computer to play against
 
 	AUDIO: (can be done in pieces.cpp, but need to import audio from sfml)
@@ -39,6 +38,7 @@ DONE STUFF:
 	added user input class
 	added board and pieces to heap to limit stack size
 	king now recognizes castling
+	en pissant
 
 */
 

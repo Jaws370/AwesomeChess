@@ -114,25 +114,39 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 				output.push_back(toInt(col + 1, row + 1));
 			}
 		}
-		/* en passant
-		if (color == "white")
+
+		//en passant
+		if (!allLastMoves.empty())
 		{
-			if (lastMove % 8 == col && lastMove / 8 == 4 && row == 5)
+			int lastMove = allLastMoves.back();
+			int secondToLastMove = allLastMoves[allLastMoves.size() - 2];
+
+			int lastMoveCol = lastMove % 8;
+			int lastMoveRow = lastMove / 8;
+
+			if (color == "white")
 			{
-				if (bPiecesData[0][toInt(col, 4)] == 1) {
-					output.push_back(toInt(col, 5));
+				bool wasDoubleMove = lastMove - secondToLastMove == 16;
+				if (lastMoveRow == 3 && row == 3 && wasDoubleMove)
+				{
+					if (bPiecesData[0][toInt(col - 1, row)] == 1 || bPiecesData[0][toInt(col + 1, row)] == 1) {
+						output.push_back(toInt(lastMoveCol, 2));
+					}
+				}
+			}
+			// black pawn
+			else
+			{
+				bool wasDoubleMove = lastMove - secondToLastMove == -16;
+				if (lastMoveRow == 4 && row == 4 && wasDoubleMove)
+				{
+					if (bPiecesData[6][toInt(col - 1, row)] == 1 || bPiecesData[6][toInt(col + 1, row)] == 1)
+					{
+						output.push_back(toInt(lastMoveCol, 5));
+					}
 				}
 			}
 		}
-		else { // black pawn
-			if (lastMove % 8 == col && lastMove / 8 == 3 && row == 2)
-			{
-				if (bPiecesData[6][toInt(col, 3)] == 1)
-				{
-					output.push_back(toInt(col, 2));
-				}
-			}
-		}*/
 	}
 	// gets knight moves
 	else if (type == "knight")
@@ -308,122 +322,70 @@ std::vector<int> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
 		{
 			// castling
 			// TODO if currently under check, if so cannot move, need to update rooks (somehow)
-			std::vector<int> checkSpaces{};
 			std::vector<int> opponentsMoves{ getAllMoves(color == "white" ? "black" : "white") };
 
-			if (color == "white") {
-				if (!hasMoved
-					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
-					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)]))
-				{
-					//checking if any piece is currently attacking the 2 squares required to castle
-					checkSpaces = { 57, 58 };
-
-					// vector for duplicate checking
-					std::vector<int> duplicates{};
-
-					// sort them for set_intersection
-					std::sort(checkSpaces.begin(), checkSpaces.end());
-					std::sort(opponentsMoves.begin(), opponentsMoves.end());
-
-					// make sure opponentsMoves is not empty
-					if (!opponentsMoves.empty())
-					{
-						// find any duplicates
-						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
-					}
-
-					// if there are no duplicates
-					if (duplicates.empty())
-					{
-						tempOutput.push_back(57);
-					}
-				}
-				else if (!hasMoved
-					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 1, row)])
-					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 2, row)])
-					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 3, row)]))
-				{
-					//checking if any piece is currently attacking the 2 squares required to castle
-					checkSpaces = { 60, 61, 62 };
-
-					// vector for duplicate checking
-					std::vector<int> duplicates{};
-
-					// sort them for set_intersection
-					std::sort(checkSpaces.begin(), checkSpaces.end());
-					std::sort(opponentsMoves.begin(), opponentsMoves.end());
-
-					// make sure opponentsMoves is not empty
-					if (!opponentsMoves.empty())
-					{
-						// find any duplicates
-						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
-					}
-
-					// if there are no duplicates
-					if (duplicates.empty())
-					{
-						tempOutput.push_back(61);
-					}
-				}
-				//black
+			// make something to store spaces that need to be checked and move that will result
+			std::vector<std::pair<std::vector<int>, int>> instructions{};
+			if (color == "white")
+			{
+				instructions.push_back({ {57, 58}, 57 });
+				instructions.push_back({ { 60, 61, 62 }, 61 });
 			}
 			else
 			{
+				instructions.push_back({ { 1, 2 } , 1 });
+				instructions.push_back({ { 4, 5, 6 }, 7 });
+			}
+
+			for (auto& instruction : instructions)
+			{
 				if (!hasMoved
 					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
-					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)]))
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)])
+					&& instruction.first.size() == 2)
 				{
-					//checking if any piece is currently attacking the 2 squares required to castle
-					checkSpaces = { 1, 2 };
-
 					// vector for duplicate checking
 					std::vector<int> duplicates{};
 
 					// sort them for set_intersection
-					std::sort(checkSpaces.begin(), checkSpaces.end());
 					std::sort(opponentsMoves.begin(), opponentsMoves.end());
 
 					// make sure opponentsMoves is not empty
 					if (!opponentsMoves.empty())
 					{
 						// find any duplicates
-						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
+						std::set_intersection(instruction.first.begin(), instruction.first.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
 					}
 
 					// if there are no duplicates
 					if (duplicates.empty())
 					{
-						tempOutput.push_back(1);
+						tempOutput.push_back(instruction.second);
 					}
 				}
 				else if (!hasMoved
 					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 1, row)])
 					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 2, row)])
-					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 3, row)]))
+					&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 3, row)])
+					&& instruction.first.size() == 3)
 				{
-					//checking if any piece is currently attacking the 2 squares required to castle
-					checkSpaces = { 4, 5, 6 };
-
 					// vector for duplicate checking
 					std::vector<int> duplicates{};
 
 					// sort them for set_intersection
-					std::sort(checkSpaces.begin(), checkSpaces.end());
 					std::sort(opponentsMoves.begin(), opponentsMoves.end());
 
 					// make sure opponentsMoves is not empty
 					if (!opponentsMoves.empty())
 					{
 						// find any duplicates
-						std::set_intersection(checkSpaces.begin(), checkSpaces.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
+						std::set_intersection(instruction.first.begin(), instruction.first.end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
 					}
 
 					// if there are no duplicates
 					if (duplicates.empty())
 					{
-						tempOutput.push_back(7);
+						tempOutput.push_back(instruction.second);
 					}
 				}
 			}
@@ -491,6 +453,10 @@ void Pieces::movePiece(int& pos1, int& pos2)
 	// take out piece if it is taking a piece
 	color = piecesArr[pos2 % 8][pos2 / 8].getColor();
 	type = piecesArr[pos2 % 8][pos2 / 8].getType();
+
+	// adds previous moves to allLastMoves
+	allLastMoves.push_back(pos1);
+	allLastMoves.push_back(pos2);
 
 	if (type == "")
 	{

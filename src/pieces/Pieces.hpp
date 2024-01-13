@@ -11,6 +11,7 @@ class Pieces
 private:
 	Piece piecesArr[8][8]{};
 	std::bitset<64> bPiecesData[14]{};
+	std::vector<int> allLastMoves{};
 
 public:
 	Pieces();
