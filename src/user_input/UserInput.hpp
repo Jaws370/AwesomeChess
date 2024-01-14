@@ -13,12 +13,12 @@
 */
 class UserInput
 {
+private:
+	std::pair<int, int> moves{ -1, -1 };
+	std::vector<std::pair<int, std::vector<int>>> possibleMoves{};
 public:
 	void handleLeftClick(const sf::Vector2i& mousePosition, Pieces& pieces);
 	void handleWindowResize(sf::RenderWindow& window, Board& board);
-private:
-	std::pair<int, int> moves{ -1, -1 };
-	std::vector<int> possibleMoves{};
 };
 
 #endif

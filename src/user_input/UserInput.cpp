@@ -25,18 +25,33 @@ void UserInput::handleLeftClick(const sf::Vector2i& mousePosition, Pieces& piece
 
 	if (moves.first == -1)
 	{
-		std::cout << "move 1" << std::endl;
 		moves.first = Pieces::toInt(col, row);
 		possibleMoves = pieces.getPossibleMoves(Pieces::toInt(col, row));
+		if (possibleMoves.size() == 0)
+		{
+			moves = { -1, -1 };
+		}
 	}
 	else
 	{
-		std::cout << "move 2" << std::endl;
 		moves.second = Pieces::toInt(col, row);
-		if (std::find(possibleMoves.begin(), possibleMoves.end(), moves.second) != possibleMoves.end())
+		auto output = std::find_if(possibleMoves.begin(), possibleMoves.end(), [this](const std::pair<int, std::vector<int>>& pair) {
+			return pair.first == this->moves.second;
+			});
+		if (output != possibleMoves.end())
 		{
-			pieces.movePiece(moves.first, moves.second);
-			pieces.updateBoard();
+			if (output->second.size() == 2)
+			{
+				pieces.movePiece(moves.first, moves.second, output->second[0], output->second[1]);
+			}
+			else if (output->second.size() == 1)
+			{
+				pieces.movePiece(moves.first, moves.second, output->second[0]);
+			}
+			else
+			{
+				pieces.movePiece(moves.first, moves.second);
+			}
 		}
 		moves = { -1, -1 };
 	}
@@ -44,7 +59,6 @@ void UserInput::handleLeftClick(const sf::Vector2i& mousePosition, Pieces& piece
 
 // need to change the pieces to be the correct size
 // also need to make sure that the window will change to always be the correct shape (square for now)
-
 void UserInput::handleWindowResize(sf::RenderWindow& window, Board& board)
 {
 	std::cout << window.getSize().x << std::endl;

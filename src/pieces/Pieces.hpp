@@ -15,8 +15,10 @@ private:
 
 public:
 	Pieces();
-	std::vector<int> getPossibleMoves(const int& pos, const bool checkingKing = false);
-	void movePiece(int& pos1, int& pos2);
+	std::vector<std::pair<int, std::vector<int>>> getPossibleMoves(const int& pos, const bool checkingKing = false);
+	void movePiece(int& pos1, int& pos2);																			// normal movement
+	void movePiece(int& pos1, int& pos2, int& remove);																// en passant
+	void movePiece(int& pos1, int& pos2, int& pos3, int& pos4);														// castling
 	void displayPieces(sf::RenderWindow& window);
 	static int toInt(const int& col, const int& row);
 	std::vector<int> getAllMoves(std::string color);

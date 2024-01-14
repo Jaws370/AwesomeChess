@@ -9,7 +9,9 @@
 
 TODO List:
 	PIECE MOVEMENT:
-	somehow move the rook while castling
+	need to add promoting to queen, rook, bishop, knight
+	need to make it so you have to move king if under check
+	need to add something to make sure king does not castle while under check
 	add computer to play against
 
 	AUDIO: (can be done in pieces.cpp, but need to import audio from sfml)
@@ -27,7 +29,7 @@ TODO List:
 
 	USER INPUT:
 	allow for the chess pieces to be dragged and point-and-click
-	allow for resizing of the window <- jack is working on this
+	allow for resizing of the window <- jack is working on this *DUMPSTER FIRE IN BACKGROUND*
 
 	CODE:
 	optimize functions to be smaller and faster while still being very understandable <- change getPossibleMoves to be more functional programming (higher order functions?)
@@ -39,6 +41,7 @@ DONE STUFF:
 	added board and pieces to heap to limit stack size
 	king now recognizes castling
 	en pissant
+	rook and pawn movement works for castling and en passant
 
 */
 
@@ -61,7 +64,6 @@ int main()
 		{
 			switch (event.type)
 			{
-				// check if mouse buttons have been pressed
 			case sf::Event::MouseButtonPressed:
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
@@ -69,7 +71,6 @@ int main()
 					in.handleLeftClick(sf::Mouse::getPosition(window), *pieces);
 				}
 				break;
-				// "close requested" event: we close the window
 			case sf::Event::Closed:
 				window.close();
 				break;
@@ -79,7 +80,6 @@ int main()
 			default:
 				break;
 			}
-			// TODO need to add code to change board and pieces in case of resizing
 		}
 
 		// clear the window with a black color
