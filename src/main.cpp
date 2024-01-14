@@ -18,6 +18,7 @@ TODO List:
 	add sounds for actions such as pieces moving, king being in check, etc.
 
 	DISPLAY: (need new classes fo sho)
+	NEED BETTER SPRITES FOR PIECES: HIGHER QUALITY (need to make sure that the pieces are not distorted)
 	add a main menu screen with a start button, and a screen that plays after someone wins, which displays who won and who lost, as well as a replay button
 	add a counter that counts the material lost and gained for each player, as well as an icon of the pieces lost, just like chess.com
 	make the pieces move instead of teleport
@@ -29,7 +30,6 @@ TODO List:
 
 	USER INPUT:
 	allow for the chess pieces to be dragged and point-and-click
-	allow for resizing of the window <- jack is working on this *DUMPSTER FIRE IN BACKGROUND*
 
 	CODE:
 	optimize functions to be smaller and faster while still being very understandable <- change getPossibleMoves to be more functional programming (higher order functions?)
@@ -42,6 +42,7 @@ DONE STUFF:
 	king now recognizes castling
 	en pissant
 	rook and pawn movement works for castling and en passant
+	window can now resize
 
 */
 
@@ -62,6 +63,8 @@ int main()
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
+			sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+
 			switch (event.type)
 			{
 			case sf::Event::MouseButtonPressed:
@@ -74,8 +77,9 @@ int main()
 			case sf::Event::Closed:
 				window.close();
 				break;
-			case sf::Event::Resized: // TODO need to fix resizing of the window... its doing something weird rn and need to check sfml docs
-				//in.handleWindowResize(window, *board);
+			case sf::Event::Resized:
+				window.setView(sf::View(visibleArea));
+				in.handleWindowResize(window, *board, *pieces);
 				break;
 			default:
 				break;

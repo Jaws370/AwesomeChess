@@ -626,7 +626,9 @@ void Pieces::updateBoard()
 				// and sets pieceTypes based off of which array it is going through
 				piecesArr[col][row].setType(i < 6 ? "black" : "white", pieceTypes[i % 6]);
 				// sets position based on row and column the piece is in
-				piecesArr[col][row].setPosition(col * 64, row * 64);
+				piecesArr[col][row].setPosition((col * spaceSize) - 1, (row * spaceSize) - 1);
+				// updates the scale
+				piecesArr[col][row].setScale(spaceScale, spaceScale);
 			}
 		}
 	}
@@ -659,6 +661,17 @@ std::vector<int> Pieces::getAllMoves(std::string color)
 
 	// returns the output
 	return output;
+}
+
+/**
+* @param spaceSize
+* resizes the pieces and sets scale
+*/
+void Pieces::resize(const float& spaceSize)
+{
+	this->spaceSize = spaceSize;
+	this->spaceScale = spaceSize / 64.f;
+	updateBoard();
 }
 
 /**

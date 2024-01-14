@@ -10,6 +10,8 @@ class Pieces
 {
 private:
 	Piece piecesArr[8][8]{};
+	float spaceSize{ 64.f };
+	float spaceScale{ 1.f };
 	std::bitset<64> bPiecesData[14]{};
 	std::vector<int> allLastMoves{};
 
@@ -22,6 +24,7 @@ public:
 	void displayPieces(sf::RenderWindow& window);
 	static int toInt(const int& col, const int& row);
 	std::vector<int> getAllMoves(std::string color);
+	void resize(const float& spaceSize);
 	void updateBoard();
 };
 

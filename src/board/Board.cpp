@@ -42,7 +42,7 @@ void Board::setSize(const int& boardSize)
 void Board::displayBoard(sf::RenderWindow& window)
 {
 	// calculate the size of each square on the board
-	int squareSize = boardSize / 8;
+	float squareSize = boardSize / 8.f;
 
 	// set the size and position of each rectangle in the rectArr
 	for (int i = 0; i < 8; i++)

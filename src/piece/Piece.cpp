@@ -41,3 +41,8 @@ std::string Piece::getColor()
 {
 	return color;
 }
+
+void Piece::setScale(float const& x, float const& y)
+{
+	displayPiece.setScale(x, y);
+}

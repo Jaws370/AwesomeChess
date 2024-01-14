@@ -18,7 +18,7 @@ private:
 	std::vector<std::pair<int, std::vector<int>>> possibleMoves{};
 public:
 	void handleLeftClick(const sf::Vector2i& mousePosition, Pieces& pieces);
-	void handleWindowResize(sf::RenderWindow& window, Board& board);
+	void handleWindowResize(sf::RenderWindow& window, Board& board, Pieces& pieces);
 };
 
 #endif
