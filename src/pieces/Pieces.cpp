@@ -591,9 +591,6 @@ void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
  */
 void Pieces::updateBoard()
 {
-	// outlines the types of pieces for easy sorting
-	const std::string pieceTypes[6]{ "pawn", "bishop", "knight", "rook", "queen", "king" };
-
 	// resets them all
 	for (int i{ 0 }; i < 8; i++)
 	{
