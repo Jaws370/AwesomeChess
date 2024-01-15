@@ -6,21 +6,30 @@
 
 class Piece
 {
-private:
-	sf::Texture image{};
-	std::string color{};
-	std::string type{};
-	sf::Sprite displayPiece{};
-
 public:
+	enum PieceType
+	{
+		PAWN,
+		BISHOP,
+		KNIGHT,
+		ROOK,
+		QUEEN,
+		KING,
+		NO_PIECE
+	};
 	Piece() = default;
-	void setType(std::string const& color, std::string const& type);
+	void setType(std::string const& color, PieceType const& type);
 	sf::Sprite getSprite();
-	std::string getType();
+	PieceType getType();
 	std::string getColor();
 	void setPosition(int const& x, int const& y);
 	void setScale(float const& x, float const& y);
 	void reset();
+private:
+	sf::Texture image{};
+	std::string color{};
+	PieceType type{};
+	sf::Sprite displayPiece{};
 };
 
 #endif

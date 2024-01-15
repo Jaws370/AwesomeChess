@@ -1,11 +1,34 @@
 #include "Piece.hpp"
 
-void Piece::setType(std::string const& color, std::string const& type)
+void Piece::setType(std::string const& color, PieceType const& type)
 {
 	this->color = color;
 	this->type = type;
 
-	if (!image.loadFromFile("assets/image/" + color + "_" + type + ".png"))
+	std::string typeStr;
+	switch (type)
+	{
+	case PAWN:
+		typeStr = "pawn";
+		break;
+	case BISHOP:
+		typeStr = "bishop";
+		break;
+	case KNIGHT:
+		typeStr = "knight";
+		break;
+	case ROOK:
+		typeStr = "rook";
+		break;
+	case QUEEN:
+		typeStr = "queen";
+		break;
+	case KING:
+		typeStr = "king";
+		break;
+	}
+
+	if (!image.loadFromFile("assets/image/" + color + "_" + typeStr + ".png"))
 		std::cerr << std::endl;
 
 	displayPiece.setTexture(image);
@@ -14,7 +37,7 @@ void Piece::setType(std::string const& color, std::string const& type)
 void Piece::reset()
 {
 	this->color = "";
-	this->type = "";
+	this->type = NO_PIECE;
 
 	if (!image.loadFromFile("assets/image/blank.png"))
 		std::cerr << std::endl;
@@ -32,7 +55,7 @@ void Piece::setPosition(int const& x, int const& y)
 	displayPiece.setPosition(x, y);
 }
 
-std::string Piece::getType()
+Piece::PieceType Piece::getType()
 {
 	return type;
 }

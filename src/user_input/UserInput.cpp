@@ -42,15 +42,15 @@ void UserInput::handleLeftClick(const sf::Vector2i& mousePosition, Pieces& piece
 		{
 			if (output->second.size() == 2)
 			{
-				pieces.movePiece(moves.first, moves.second, output->second[0], output->second[1]);
+				pieces.movePiece(moves.first, moves.second, std::vector<int>{output->second[0], output->second[1]});
 			}
 			else if (output->second.size() == 1)
 			{
-				pieces.movePiece(moves.first, moves.second, output->second[0]);
+				pieces.movePiece(moves.first, moves.second, std::vector<int>{output->second[0]});
 			}
 			else
 			{
-				pieces.movePiece(moves.first, moves.second);
+				pieces.movePiece(moves.first, moves.second, std::vector<int>{});
 			}
 		}
 		moves = { -1, -1 };
