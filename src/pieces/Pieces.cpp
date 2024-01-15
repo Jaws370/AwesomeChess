@@ -67,9 +67,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 			// check if it can move one space forward
 			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)] == 0)
 			{
-				{
-					output.push_back({ toInt(col, row - 1), std::vector<int>{} });
-				}
+				output.push_back({ toInt(col, row - 1), std::vector<int>{} });
 
 				// check if it can move two spaces forward
 				if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] == 0 && row == 6)
