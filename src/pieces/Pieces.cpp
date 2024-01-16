@@ -355,7 +355,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 }
 
 void Pieces::getPromote(){
-	if(this.color=="white" &&this.type"pawn" && row==0){
+	if(this.color=="white" &&this.type=="pawn" && row==0){
 		whitePromotion();
 	}
 	else if(this.color=="black" && this.type=="pawn" && row==7){
@@ -363,7 +363,7 @@ void Pieces::getPromote(){
 	}
 }
 
-//waits for user to input a number 1-4 to promote their past pawn
+//waits for white to input a number 1-4 to promote their past pawn
 void Pieces::whitePromotion(){
 	//continue checking
 	while(!promoted){
@@ -402,48 +402,45 @@ void Pieces::whitePromotion(){
 	}
 }
 
-//waits for user to input a number 1-4 to promote their past pawn
-void Pieces::whitePromotion(){
-	//continue checking
-	while(!promoted){
-		//checks if 1 is pressed
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-		{
-			//promote pawn to bishop
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[7]toInt(col,row)=1;
-			promoted=true;	
-		}
-		//checks if 2 is pressed
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-		{
-			//promote pawn to knight
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[8]toInt(col,row)=1;
-			promoted=true;	
-		}
-		//checks if 3 is pressed
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-		{
-			//promote pawn to rook
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[9]toInt(col,row)=1;
-			promoted=true;	
-		}
-		//checks if 4 is pressed
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-		{
-			//promote pawn to queen
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[10]toInt(col,row)=1;
-			promoted=true;	
-		}
-	}
-}
-
+//waits for black to input a number 1-4 to promote their past pawn
 void Pieces::blackPromotion(){
-
+	//continue checking
+	while(!promoted){
+		//checks if 1 is pressed
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		{
+			//promote pawn to bishop
+			bPiecesData[0]toInt(col,row)=0;
+			bPiecesData[1]toInt(col,row)=1;
+			promoted=true;	
+		}
+		//checks if 2 is pressed
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
+		{
+			//promote pawn to knight
+			bPiecesData[0]toInt(col,row)=0;
+			bPiecesData[2]toInt(col,row)=1;
+			promoted=true;	
+		}
+		//checks if 3 is pressed
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
+		{
+			//promote pawn to rook
+			bPiecesData[0]toInt(col,row)=0;
+			bPiecesData[3]toInt(col,row)=1;
+			promoted=true;	
+		}
+		//checks if 4 is pressed
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+		{
+			//promote pawn to queen
+			bPiecesData[0]toInt(col,row)=0;
+			bPiecesData[4]toInt(col,row)=1;
+			promoted=true;	
+		}
+	}
 }
+
 /**
 * removes any spaces that would be under check from a vector based on the other color's moves
 */
