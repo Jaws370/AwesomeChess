@@ -43,6 +43,7 @@ DONE STUFF:
 	en pissant
 	rook and pawn movement works for castling and en passant
 	window can now resize
+	changed the function getPossibleMoves to have multiple functions of get(&piece)Moves for easier replacement
 
 */
 

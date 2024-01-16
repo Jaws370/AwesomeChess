@@ -37,11 +37,34 @@ int Pieces::toInt(const int& col, const int& row)
 	return (row * 8) + col;
 }
 
+/**
+* converts an int (0-63) into a corresponding pair of { col, row }
+*/
 std::pair<int, int> Pieces::toColRow(const int& pos)
 {
 	return { pos % 8, pos / 8 };
 }
 
+/**
+* takes two vectors and combines them into one (will give error if they are two different types)
+*/
+std::vector<auto> Pieces::combineVectors(vector<auto>& v1, vector<auto>& v2)
+{
+	if (std::is_same(decltype(*v1), decltype(*v2)))
+	{
+		return std::insert(v1.end(), v2.begin(), v2.end());
+	}
+	else
+	{
+		std::cerr << "incompatible types for combination" << std::endl;
+	}
+
+	return;
+}
+
+/**
+* gets all the moves for a pawn at pos
+*/
 std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& pos)
 {
 	int col, row;
@@ -144,16 +167,30 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& po
 	return output;
 }
 
-std::vector<std::pair<int, std::vector<int>>> Pieces::getBishopMoves(const int& pos)
+/**
+* gets all the moves for Bishop, Rook, Queen based on the pos and the directions given
+*/
+std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col, const int& row, const std::string& color, const PieceType& type) //TODO change to have the directions given based on the type of the piece
 {
-	int col, row;
-	std::tie(col, row) = toColRow(pos);
+	// get directions
+	std::vector<int> directions{};
+	switch(type)
+	{
+	case Piece::BISHOP:
+		directions = { {1, 1}, {-1, 1}, {-1, -1}, {1, -1} };
+		break;
+	case Piece::ROOK:
+		directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+		break;
+	case Piece::QUEEN:
+		directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1} };
+		break;
+	default:
+		std::cerr << "ERROR: getBRQMoves called on wrong type" << std::endl;
+		break;
+	}
 
-	const std::string color{ piecesArr[col][row].getColor() };
 	std::vector<std::pair<int, std::vector<int>>> output{};
-
-	// each direction the piece can go
-	std::vector<std::pair<int, int>> directions{ {1, 1}, {-1, 1}, {-1, -1}, {1, -1} };
 
 	// checks each direction
 	for (auto& direction : directions)
@@ -191,16 +228,26 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getBishopMoves(const int& 
 	return output;
 }
 
-std::vector<std::pair<int, std::vector<int>>> Pieces::getKnightMoves(const int& pos)
+/**
+* gets the moves for the Knight and King based on directions given
+*/
+std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type) //TODO change to have the directions given based on the type of the piece
 {
-	int col, row;
-	std::tie(col, row) = toColRow(pos);
+	std::vector<int> directions{};
+	switch (type)
+	{
+	case Piece::KNIGHT:
+		directions = {{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
+		break;
+	case Piece::KING:
+		directions = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+		break;
+	default:
+		std::cerr << "ERROR wrong type given to getKnKMoves in Pieces.cpp" << std::endl;
+		break;
+	}
 
-	const std::string color{ piecesArr[col][row].getColor() };
 	std::vector<std::pair<int, std::vector<int>>> output{};
-
-	// creates a vector containing all possible knight moves
-	std::vector<std::pair<int, int>> directions{ {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2} };
 
 	// checks each direction
 	for (auto& direction : directions)
@@ -224,217 +271,104 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKnightMoves(const int& 
 	return output;
 }
 
-std::vector<std::pair<int, std::vector<int>>> Pieces::getRookMoves(const int& pos)
+/**
+* gets the moves for a castling king
+*/
+std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int& pos)
 {
-	int col, row;
-	std::tie(col, row) = toColRow(pos);
-
-	const std::string color{ piecesArr[col][row].getColor() };
-	std::vector<std::pair<int, std::vector<int>>> output{};
-
-	// the directions this piece can move
-	std::vector<std::pair<int, int>> directions{ {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
-
-	// checks each direction
-	for (auto& direction : directions)
+	bool hasMoved{ false };
+	if (std::find(allLastMoves.begin(), allLastMoves.end(), pos) != allLastMoves.end())
 	{
-		// keeps track of the columns and the rows
-		int newCol{ col + direction.first };
-		int newRow{ row + direction.second };
+		hasMoved = !hasMoved;
+	}
 
-		// iterates as long as they are inside of the range of the board
-		while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
+	// castling
+	std::vector<int> opponentsMoves{ getAllMoves(color == "white" ? "black" : "white") };
+
+	// make something to store spaces that need to be checked and move that will result
+	std::vector<std::tuple<std::vector<int>, int, std::vector<int>>> instructions{};
+	if (color == "white")
+	{
+		instructions.push_back({ {61, 62}, 62 , {63, 61} });
+		instructions.push_back({ { 57, 58, 59 }, 58, {56, 59} });
+	}
+	else
+	{
+		instructions.push_back({ { 5, 6 } , 6, {7, 5} });
+		instructions.push_back({ { 1, 2, 3 }, 2, {0, 3} });
+	}
+
+	for (auto& instruction : instructions)
+	{
+		if (!hasMoved
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 1, row)])
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 2, row)])
+			&& std::get<0>(instruction).size() == 2)
 		{
-			// checks if own piece is there (if so then it cannot go there)
-			if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
+			// vector for duplicate checking
+			std::vector<int> duplicates{};
+
+			// sort them for set_intersection
+			std::sort(opponentsMoves.begin(), opponentsMoves.end());
+
+			// make sure opponentsMoves is not empty
+			if (!opponentsMoves.empty())
 			{
-				// stops checking this direction
-				break;
+				// find any duplicates
+				std::set_intersection(std::get<0>(instruction).begin(), std::get<0>(instruction).end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
 			}
 
-			// add current check as possible move
-			output.push_back({ toInt(newCol, newRow), std::vector<int>{} });
-
-			// checks if opponent's piece is there (if so can go there)
-			if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
+			// if there are no duplicates
+			if (duplicates.empty())
 			{
-				// stops checking this direction
-				break;
+				tempOutput.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
+			}
+		}
+		else if (!hasMoved
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)])
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 3, row)])
+			&& std::get<0>(instruction).size() == 3)
+		{
+			// vector for duplicate checking
+			std::vector<int> duplicates{};
+
+			// sort them for set_intersection
+			std::sort(opponentsMoves.begin(), opponentsMoves.end());
+
+			// make sure opponentsMoves is not empty
+			if (!opponentsMoves.empty())
+			{
+				// find any duplicates
+				std::set_intersection(std::get<0>(instruction).begin(), std::get<0>(instruction).end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
 			}
 
-			// checking next space
-			newCol += direction.first;
-			newRow += direction.second;
+			// if there are no duplicates
+			if (duplicates.empty())
+			{
+				tempOutput.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
+			}
 		}
 	}
 
 	return output;
 }
 
-std::vector<std::pair<int, std::vector<int>>> Pieces::getQueenMoves(const int& pos)
+/**
+* removes any spaces that would be under check from a vector based on the other color's moves
+*/
+std::vector<std::pair<int, std::vector<int>>> Pieces::removeChecks(const std::string& color, const vector<int>& tempOutput)
 {
-	int col, row;
-	std::tie(col, row) = toColRow(pos);
+	// finds out if a space would be under check
+	std::vector<int> checkSpaces1{ getAllMoves(color == "white" ? "black" : "white") };
 
-	const std::string color{ piecesArr[col][row].getColor() };
-	std::vector<std::pair<int, std::vector<int>>> output{};
-
-	// the directions this piece can move
-	std::vector<std::pair<int, int>> directions{ {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1} };
-
-	// checks each direction
-	for (auto& direction : directions)
+	// removes all moves that are in check
+	for (int i{ 0 }; i < tempOutput.size(); i++)
 	{
-		// keeps track of the columns and the rows
-		int newCol{ col + direction.first };
-		int newRow{ row + direction.second };
-
-		// iterates as long as they are inside of the range of the board
-		while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
+		// if not in check
+		if (std::find(checkSpaces1.begin(), checkSpaces1.end(), tempOutput[i].first) == checkSpaces1.end())
 		{
-			// checks if own piece is there (if so then it cannot go there)
-			if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
-			{
-				// stops checking this direction
-				break;
-			}
-
-			// add current check as possible move
-			output.push_back({ toInt(newCol, newRow), std::vector<int>{} });
-
-			// checks if opponent's piece is there (if so can go there)
-			if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
-			{
-				// stops checking this direction
-				break;
-			}
-
-			// checking next space
-			newCol += direction.first;
-			newRow += direction.second;
-		}
-	}
-
-	return output;
-}
-
-std::vector<std::pair<int, std::vector<int>>> Pieces::getKingMoves(const int& pos, const bool& checkingKing)
-{
-	int col, row;
-	std::tie(col, row) = toColRow(pos);
-
-	const std::string color{ piecesArr[col][row].getColor() };
-	std::vector<std::pair<int, std::vector<int>>> output{};
-
-	std::vector<std::pair<int, std::vector<int>>> tempOutput{};
-
-	// creates a vector containing all possible knight moves
-	std::vector<std::pair<int, int>> directions{ {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1} };
-
-	// checks each direction
-	for (auto& direction : directions)
-	{
-		// creates new col and row
-		int newCol{ col + direction.first };
-		int newRow{ row + direction.second };
-
-		// checks if is in range of board
-		if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
-		{
-			// checks if own piece is there (if so then it cannot go there)
-			if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
-			{
-				continue;
-			}
-			tempOutput.push_back({ toInt(newCol, newRow), std::vector<int>{} });
-		}
-	}
-
-	// if not checking for all the possible opponents moves
-	if (!checkingKing)
-	{
-		bool hasMoved{ false };
-
-		// castling
-		std::vector<int> opponentsMoves{ getAllMoves(color == "white" ? "black" : "white") };
-
-		// make something to store spaces that need to be checked and move that will result
-		std::vector<std::tuple<std::vector<int>, int, std::vector<int>>> instructions{};
-		if (color == "white")
-		{
-			instructions.push_back({ {61, 62}, 62 , {63, 61} });
-			instructions.push_back({ { 57, 58, 59 }, 58, {56, 59} });
-		}
-		else
-		{
-			instructions.push_back({ { 5, 6 } , 6, {7, 5} });
-			instructions.push_back({ { 1, 2, 3 }, 2, {0, 3} });
-		}
-
-		for (auto& instruction : instructions)
-		{
-			if (!hasMoved
-				&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 1, row)])
-				&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 2, row)])
-				&& std::get<0>(instruction).size() == 2)
-			{
-				// vector for duplicate checking
-				std::vector<int> duplicates{};
-
-				// sort them for set_intersection
-				std::sort(opponentsMoves.begin(), opponentsMoves.end());
-
-				// make sure opponentsMoves is not empty
-				if (!opponentsMoves.empty())
-				{
-					// find any duplicates
-					std::set_intersection(std::get<0>(instruction).begin(), std::get<0>(instruction).end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
-				}
-
-				// if there are no duplicates
-				if (duplicates.empty())
-				{
-					tempOutput.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
-				}
-			}
-			else if (!hasMoved
-				&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
-				&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)])
-				&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 3, row)])
-				&& std::get<0>(instruction).size() == 3)
-			{
-				// vector for duplicate checking
-				std::vector<int> duplicates{};
-
-				// sort them for set_intersection
-				std::sort(opponentsMoves.begin(), opponentsMoves.end());
-
-				// make sure opponentsMoves is not empty
-				if (!opponentsMoves.empty())
-				{
-					// find any duplicates
-					std::set_intersection(std::get<0>(instruction).begin(), std::get<0>(instruction).end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
-				}
-
-				// if there are no duplicates
-				if (duplicates.empty())
-				{
-					tempOutput.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
-				}
-			}
-		}
-
-		// finds out if a space would be under check
-		std::vector<int> checkSpaces1{ getAllMoves(color == "white" ? "black" : "white") };
-
-		// removes all moves that are in check
-		for (int i{ 0 }; i < tempOutput.size(); i++)
-		{
-			// if not in check
-			if (std::find(checkSpaces1.begin(), checkSpaces1.end(), tempOutput[i].first) == checkSpaces1.end())
-			{
-				output.push_back(tempOutput[i]);
-			}
+			output.push_back(tempOutput[i]);
 		}
 	}
 
@@ -453,6 +387,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 	std::tie(col, row) = toColRow(pos);
 
 	// gets the type and color of the piece
+	const std::string color{ piecesArr[col][row].getColor() };
 	Piece::PieceType type{ piecesArr[col][row].getType() };
 
 	// creates the output vector
@@ -464,19 +399,24 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 		output = getPawnMoves(pos);
 		break;
 	case Piece::BISHOP:
-		output = getBishopMoves(pos);
+		output = getBRQMoves(col, row, color, type);
 		break;
 	case Piece::KNIGHT:
-		output = getKnightMoves(pos);
+		output = getKnKMoves(col, row, color, type);
 		break;
 	case Piece::ROOK:
-		output = getRookMoves(pos);
+		output = getBRQMoves(col, row, color, type);
 		break;
 	case Piece::QUEEN:
-		output = getQueenMoves(pos);
+		output = getBRQMoves(col, row, color, type);
 		break;
 	case Piece::KING:
-		output = getKingMoves(pos, checkingKing);
+		output = getKnKMoves(col, row, color, type);
+		if (!checkingKing)
+		{
+			output = Pieces::combineVectors(output, getKingCastling(pos));
+			output = removeChecks(color, output);
+		}
 		break;
 	default:
 		break;
@@ -494,6 +434,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
  * changes the bit-sets that represent the board
  * @param pos1 takes in the old position
  * @param pos2 takes in new position
+ * @param additionalMoves size(1) = do en passant stuff || size(2) = do castling stuff
  */
 void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 {
@@ -620,13 +561,13 @@ void Pieces::updateBoard()
 				// sets position based on row and column the piece is in
 				piecesArr[col][row].setPosition((col * spaceSize) - 1, (row * spaceSize) - 1);
 				// updates the scale
-				piecesArr[col][row].setScale(spaceScale, spaceScale);
+				piecesArr[col][row].setScale(pieceScale, pieceScale);
 			}
 		}
 	}
 }
 
-/*
+/**
 * gets all of the possible moves of the color provided
 * @param color takes in color of the pieces you want the moves for
 */
@@ -656,13 +597,13 @@ std::vector<int> Pieces::getAllMoves(std::string color)
 }
 
 /**
-* @param spaceSize
 * resizes the pieces and sets scale
+* @param spaceSize the size of a space
 */
 void Pieces::resize(const float& spaceSize)
 {
 	this->spaceSize = spaceSize;
-	this->spaceScale = spaceSize / 64.f;
+	this->pieceScale = spaceSize / 64.f;
 	updateBoard();
 }
 
