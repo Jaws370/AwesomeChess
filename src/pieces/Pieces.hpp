@@ -14,20 +14,21 @@ private:
 	float pieceScale{ 1.f };
 	std::bitset<64> bPiecesData[14]{};
 	std::vector<int> allLastMoves{};
-	std::vector<std::pair<int, std::vector<int>>> getPawnMoves(const int& pos);
-	std::vector<std::pair<int, std::vector<int>>> getBRQMoves(const int& pos, const vector<int>& directions);
-	std::vector<std::pair<int, std::vector<int>>> getKnKMoves(const int& pos, const vector<int>& directions);
-	std::vector<std::pair<int, std::vector<int>>> getKingCastling(const int& pos);
-	std::vector<std::pair<int, std::vector<int>>> removeChecks(const vector<int>& tempOutput);
+	std::vector<std::pair<int, std::vector<int>>> getPawnMoves(const int& col, const int& row, const std::string& color);
+	std::vector<std::pair<int, std::vector<int>>> getBRQMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type);
+	std::vector<std::pair<int, std::vector<int>>> getKnKMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type);
+	std::vector<std::pair<int, std::vector<int>>> getKingCastling(const int& pos, const int& col, const int& row, const std::string& color, const Piece::PieceType& type);
+	std::vector<std::pair<int, std::vector<int>>> removeChecks(const std::string& color, const std::vector<std::pair<int, std::vector<int>>>& tempOutput);
 
 public:
 	Pieces();
-	std::vector<std::pair<int, std::vector<int>>> getPossibleMoves(const int& pos, const bool checkingKing = false);
+	std::vector<std::pair<int, std::vector<int>>> getPossibleMoves(const int& pos, const bool& checkingKing = false);
 	void movePiece(int& pos1, int& pos2, std::vector<int>& additonalMoves);
 	void displayPieces(sf::RenderWindow& window);
 	static int toInt(const int& col, const int& row);
 	static std::pair<int, int> toColRow(const int& pos);
-	static std::vector<auto> combineVectors(vector<auto>& v1, vector<auto>& v2);
+	template<typename T>
+	static std::vector<T> combineVectors(const std::vector<T>& v1, const std::vector<T>& v2);
 	std::vector<int> getAllMoves(std::string color);
 	void resize(const float& spaceSize);
 	void updateBoard();

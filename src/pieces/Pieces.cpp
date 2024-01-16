@@ -48,29 +48,29 @@ std::pair<int, int> Pieces::toColRow(const int& pos)
 /**
 * takes two vectors and combines them into one (will give error if they are two different types)
 */
-std::vector<auto> Pieces::combineVectors(vector<auto>& v1, vector<auto>& v2)
+template<typename T>
+std::vector<T> Pieces::combineVectors(const std::vector<T>& v1, const std::vector<T>& v2)
 {
-	if (std::is_same(decltype(*v1), decltype(*v2)))
+	if (std::is_same<typename std::vector<T>::value_type, typename std::vector<T>::value_type>::value)
 	{
-		return std::insert(v1.end(), v2.begin(), v2.end());
+		std::vector<T> result;
+		result.insert(result.end(), v1.begin(), v1.end());
+		result.insert(result.end(), v2.begin(), v2.end());
+		return result;
 	}
 	else
 	{
 		std::cerr << "incompatible types for combination" << std::endl;
+		// You might want to handle the error case here
 	}
-
-	return;
+	return v1;
 }
 
 /**
 * gets all the moves for a pawn at pos
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& pos)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& col, const int& row, const std::string& color)
 {
-	int col, row;
-	std::tie(col, row) = toColRow(pos);
-
-	const std::string color{ piecesArr[col][row].getColor() };
 	std::vector<std::pair<int, std::vector<int>>> output{};
 
 	// needs to move up the board if white (neg row)
@@ -170,11 +170,11 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& po
 /**
 * gets all the moves for Bishop, Rook, Queen based on the pos and the directions given
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col, const int& row, const std::string& color, const PieceType& type) //TODO change to have the directions given based on the type of the piece
+std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type)
 {
 	// get directions
-	std::vector<int> directions{};
-	switch(type)
+	std::vector<std::pair<int, int>> directions{};
+	switch (type)
 	{
 	case Piece::BISHOP:
 		directions = { {1, 1}, {-1, 1}, {-1, -1}, {1, -1} };
@@ -186,7 +186,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col
 		directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1} };
 		break;
 	default:
-		std::cerr << "ERROR: getBRQMoves called on wrong type" << std::endl;
+		std::cerr << "ERROR: getBRQMoves() called on wrong type in Pieces.cpp" << std::endl;
 		break;
 	}
 
@@ -231,19 +231,19 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col
 /**
 * gets the moves for the Knight and King based on directions given
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type) //TODO change to have the directions given based on the type of the piece
+std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type)
 {
-	std::vector<int> directions{};
+	std::vector<std::pair<int, int>> directions{};
 	switch (type)
 	{
 	case Piece::KNIGHT:
-		directions = {{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}};
+		directions = { {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2} };
 		break;
 	case Piece::KING:
-		directions = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+		directions = { {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1} };
 		break;
 	default:
-		std::cerr << "ERROR wrong type given to getKnKMoves in Pieces.cpp" << std::endl;
+		std::cerr << "ERROR wrong type given to getKnKMoves() in Pieces.cpp" << std::endl;
 		break;
 	}
 
@@ -274,13 +274,15 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col
 /**
 * gets the moves for a castling king
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int& pos)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int& pos, const int& col, const int& row, const std::string& color, const Piece::PieceType& type)
 {
 	bool hasMoved{ false };
 	if (std::find(allLastMoves.begin(), allLastMoves.end(), pos) != allLastMoves.end())
 	{
 		hasMoved = !hasMoved;
 	}
+
+	std::vector<std::pair<int, std::vector<int>>> output{};
 
 	// castling
 	std::vector<int> opponentsMoves{ getAllMoves(color == "white" ? "black" : "white") };
@@ -289,13 +291,13 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 	std::vector<std::tuple<std::vector<int>, int, std::vector<int>>> instructions{};
 	if (color == "white")
 	{
-		instructions.push_back({ {61, 62}, 62 , {63, 61} });
-		instructions.push_back({ { 57, 58, 59 }, 58, {56, 59} });
+		instructions.push_back({ { 60, 61, 62 }, 62 , { 63, 61 } });
+		instructions.push_back({ { 57, 58, 59, 60 }, 58, { 56, 59 } });
 	}
 	else
 	{
-		instructions.push_back({ { 5, 6 } , 6, {7, 5} });
-		instructions.push_back({ { 1, 2, 3 }, 2, {0, 3} });
+		instructions.push_back({ { 4, 5, 6 } , 6, { 7, 5 } });
+		instructions.push_back({ { 1, 2, 3, 4 }, 2, { 0, 3 } });
 	}
 
 	for (auto& instruction : instructions)
@@ -303,31 +305,6 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 		if (!hasMoved
 			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 1, row)])
 			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col + 2, row)])
-			&& std::get<0>(instruction).size() == 2)
-		{
-			// vector for duplicate checking
-			std::vector<int> duplicates{};
-
-			// sort them for set_intersection
-			std::sort(opponentsMoves.begin(), opponentsMoves.end());
-
-			// make sure opponentsMoves is not empty
-			if (!opponentsMoves.empty())
-			{
-				// find any duplicates
-				std::set_intersection(std::get<0>(instruction).begin(), std::get<0>(instruction).end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
-			}
-
-			// if there are no duplicates
-			if (duplicates.empty())
-			{
-				tempOutput.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
-			}
-		}
-		else if (!hasMoved
-			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
-			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)])
-			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 3, row)])
 			&& std::get<0>(instruction).size() == 3)
 		{
 			// vector for duplicate checking
@@ -346,7 +323,32 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 			// if there are no duplicates
 			if (duplicates.empty())
 			{
-				tempOutput.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
+				output.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
+			}
+		}
+		else if (!hasMoved
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 1, row)])
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 2, row)])
+			&& !((bPiecesData[12] | bPiecesData[13])[toInt(col - 3, row)])
+			&& std::get<0>(instruction).size() == 4)
+		{
+			// vector for duplicate checking
+			std::vector<int> duplicates{};
+
+			// sort them for set_intersection
+			std::sort(opponentsMoves.begin(), opponentsMoves.end());
+
+			// make sure opponentsMoves is not empty
+			if (!opponentsMoves.empty())
+			{
+				// find any duplicates
+				std::set_intersection(std::get<0>(instruction).begin(), std::get<0>(instruction).end(), opponentsMoves.begin(), opponentsMoves.end(), std::back_inserter(duplicates));
+			}
+
+			// if there are no duplicates
+			if (duplicates.empty())
+			{
+				output.push_back({ std::get<1>(instruction), std::get<2>(instruction) });
 			}
 		}
 	}
@@ -354,6 +356,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 	return output;
 }
 
+/*
 void Pieces::getPromote(){
 	if(this.color=="white" &&this.type=="pawn" && row==0){
 		whitePromotion();
@@ -373,7 +376,7 @@ void Pieces::whitePromotion(){
 			//promote pawn to bishop
 			bPiecesData[6]toInt(col,row)=0;
 			bPiecesData[7]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 		//checks if 2 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
@@ -381,7 +384,7 @@ void Pieces::whitePromotion(){
 			//promote pawn to knight
 			bPiecesData[6]toInt(col,row)=0;
 			bPiecesData[8]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 		//checks if 3 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
@@ -389,7 +392,7 @@ void Pieces::whitePromotion(){
 			//promote pawn to rook
 			bPiecesData[6]toInt(col,row)=0;
 			bPiecesData[9]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 		//checks if 4 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
@@ -397,12 +400,12 @@ void Pieces::whitePromotion(){
 			//promote pawn to queen
 			bPiecesData[6]toInt(col,row)=0;
 			bPiecesData[10]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 	}
 }
 
-//waits for black to input a number 1-4 to promote their past pawn
+/*waits for black to input a number 1 - 4 to promote their past pawn
 void Pieces::blackPromotion(){
 	//continue checking
 	while(!promoted){
@@ -412,7 +415,7 @@ void Pieces::blackPromotion(){
 			//promote pawn to bishop
 			bPiecesData[0]toInt(col,row)=0;
 			bPiecesData[1]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 		//checks if 2 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
@@ -420,7 +423,7 @@ void Pieces::blackPromotion(){
 			//promote pawn to knight
 			bPiecesData[0]toInt(col,row)=0;
 			bPiecesData[2]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 		//checks if 3 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
@@ -428,7 +431,7 @@ void Pieces::blackPromotion(){
 			//promote pawn to rook
 			bPiecesData[0]toInt(col,row)=0;
 			bPiecesData[3]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 		//checks if 4 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
@@ -436,16 +439,18 @@ void Pieces::blackPromotion(){
 			//promote pawn to queen
 			bPiecesData[0]toInt(col,row)=0;
 			bPiecesData[4]toInt(col,row)=1;
-			promoted=true;	
+			promoted=true;
 		}
 	}
-}
+}*/
 
 /**
 * removes any spaces that would be under check from a vector based on the other color's moves
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::removeChecks(const std::string& color, const vector<int>& tempOutput)
+std::vector<std::pair<int, std::vector<int>>> Pieces::removeChecks(const std::string& color, const std::vector<std::pair<int, std::vector<int>>>& tempOutput)
 {
+	std::vector<std::pair<int, std::vector<int>>> output{};
+
 	// finds out if a space would be under check
 	std::vector<int> checkSpaces1{ getAllMoves(color == "white" ? "black" : "white") };
 
@@ -468,7 +473,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::removeChecks(const std::st
  * @param checkingKing true if running while checking king (default value is false)
  * @returns an array of integers (0-63) representing possible moves
  */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int& pos, bool checkingKing)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int& pos, const bool& checkingKing)
 {
 	int col, row;
 	std::tie(col, row) = toColRow(pos);
@@ -483,7 +488,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 	switch (type)
 	{
 	case Piece::PAWN:
-		output = getPawnMoves(pos);
+		output = getPawnMoves(col, row, color);
 		break;
 	case Piece::BISHOP:
 		output = getBRQMoves(col, row, color, type);
@@ -501,7 +506,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 		output = getKnKMoves(col, row, color, type);
 		if (!checkingKing)
 		{
-			output = Pieces::combineVectors(output, getKingCastling(pos));
+			output = Pieces::combineVectors(output, getKingCastling(pos, col, row, color, type));
 			output = removeChecks(color, output);
 		}
 		break;
@@ -509,9 +514,13 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 		break;
 	}
 
-	for (auto& move : output)
+	if (!checkingKing)
 	{
-		std::cout << move.first << std::endl;
+		std::cout << "\nnew" << std::endl;
+		for (auto& move : output)
+		{
+			std::cout << move.first << std::endl;
+		}
 	}
 
 	return output;
