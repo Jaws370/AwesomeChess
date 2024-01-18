@@ -77,23 +77,23 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 	if (color == "white")
 	{
 		// check if it can move one space forward
-		if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)] == 0)
+		if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)])
 		{
 			output.push_back({ toInt(col, row - 1), std::vector<int>{} });
 
 			// check if it can move two spaces forward
-			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] == 0 && row == 6)
+			if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] && row == 6)
 			{
 				output.push_back({ toInt(col, row - 2), std::vector<int>{} });
 			}
 		}
 
 		// check if it can capture diagonally
-		if ((bPiecesData[12])[toInt(col - 1, row - 1)] == 1)
+		if ((bPiecesData[12])[toInt(col - 1, row - 1)])
 		{
 			output.push_back({ toInt(col - 1, row - 1), std::vector<int>{} });
 		}
-		if (bPiecesData[12][toInt(col + 1, row - 1)] == 1)
+		if (bPiecesData[12][toInt(col + 1, row - 1)])
 		{
 			output.push_back({ toInt(col + 1, row - 1), std::vector<int>{} });
 		}
@@ -102,23 +102,23 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 	else
 	{
 		// check if it can move one space forward
-		if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 1)] == 0)
+		if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row + 1)])
 		{
 			output.push_back({ toInt(col, row + 1), std::vector<int>{} });
 
 			// check if it can move two spaces forward
-			if ((bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] == 0 && row == 1)
+			if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] && row == 1)
 			{
 				output.push_back({ toInt(col, row + 2), std::vector<int>{} });
 			}
 		}
 
 		// check if it can capture diagonally
-		if (bPiecesData[13][toInt(col - 1, row + 1)] == 1)
+		if (bPiecesData[13][toInt(col - 1, row + 1)])
 		{
 			output.push_back({ toInt(col - 1, row + 1), std::vector<int>{} });
 		}
-		if (bPiecesData[13][toInt(col + 1, row + 1)] == 1)
+		if (bPiecesData[13][toInt(col + 1, row + 1)])
 		{
 			output.push_back({ toInt(col + 1, row + 1), std::vector<int>{} });
 		}
@@ -138,10 +138,10 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 			bool wasDoubleMove = lastMove - secondToLastMove == 16;
 			if (lastMoveRow == 3 && row == 3 && wasDoubleMove)
 			{
-				if (bPiecesData[0][toInt(col - 1, row)] == 1) {
+				if (bPiecesData[0][toInt(col - 1, row)]) {
 					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(col - 1, row)} });
 				}
-				else if (bPiecesData[0][toInt(col + 1, row)] == 1)
+				else if (bPiecesData[0][toInt(col + 1, row)])
 				{
 					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(col + 1, row)} });
 				}
@@ -153,10 +153,10 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 			bool wasDoubleMove = lastMove - secondToLastMove == -16;
 			if (lastMoveRow == 4 && row == 4 && wasDoubleMove)
 			{
-				if (bPiecesData[6][toInt(col - 1, row)] == 1) {
+				if (bPiecesData[6][toInt(col - 1, row)]) {
 					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(col - 1, row)} });
 				}
-				else if (bPiecesData[6][toInt(col + 1, row)] == 1)
+				else if (bPiecesData[6][toInt(col + 1, row)])
 				{
 					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(col + 1, row)} });
 				}
@@ -213,7 +213,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col
 			output.push_back({ toInt(newCol, newRow), std::vector<int>{} });
 
 			// checks if opponent's piece is there (if so can go there)
-			if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)] == 1)
+			if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)])
 			{
 				// stops checking this direction
 				break;
