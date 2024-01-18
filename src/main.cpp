@@ -9,9 +9,8 @@
 
 TODO List:
 	PIECE MOVEMENT:
-	need to add promoting to queen, rook, bishop, knight
+	bugfix promoting to queen, rook, bishop, knight
 	need to make it so you have to move king if under check
-	need to add something to make sure king does not castle while under check
 	add computer to play against
 
 	AUDIO: (can be done in pieces.cpp, but need to import audio from sfml)
@@ -35,7 +34,7 @@ TODO List:
 	optimize functions to be smaller and faster while still being very understandable <- change getPossibleMoves to be more functional programming (higher order functions?)
 	needs to be better optimized memory wise
 
-DONE STUFF:
+	DONE STUFF:
 	checking and movement for the king
 	added user input class
 	added board and pieces to heap to limit stack size
@@ -44,7 +43,7 @@ DONE STUFF:
 	rook and pawn movement works for castling and en passant
 	window can now resize
 	changed the function getPossibleMoves to have multiple functions of get(&piece)Moves for easier replacement
-
+	need to add something to make sure king does not castle while under check
 */
 
 int main()

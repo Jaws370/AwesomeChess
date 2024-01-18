@@ -371,7 +371,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 	return output;
 }
 
-/*
+
 void Pieces::getPromote(){
 	if(this.color=="white" &&this.type=="pawn" && row==0){
 		whitePromotion();
@@ -394,7 +394,7 @@ void Pieces::whitePromotion(){
 			promoted=true;
 		}
 		//checks if 2 is pressed
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 		{
 			//promote pawn to knight
 			bPiecesData[6]toInt(col,row)=0;
@@ -402,7 +402,7 @@ void Pieces::whitePromotion(){
 			promoted=true;
 		}
 		//checks if 3 is pressed
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		{
 			//promote pawn to rook
 			bPiecesData[6]toInt(col,row)=0;
@@ -410,7 +410,7 @@ void Pieces::whitePromotion(){
 			promoted=true;
 		}
 		//checks if 4 is pressed
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
 		{
 			//promote pawn to queen
 			bPiecesData[6]toInt(col,row)=0;
@@ -420,7 +420,7 @@ void Pieces::whitePromotion(){
 	}
 }
 
-/*waits for black to input a number 1 - 4 to promote their past pawn
+waits for black to input a number 1 - 4 to promote their past pawn
 void Pieces::blackPromotion(){
 	//continue checking
 	while(!promoted){
@@ -457,7 +457,7 @@ void Pieces::blackPromotion(){
 			promoted=true;
 		}
 	}
-}*/
+}
 
 /**
 * removes any spaces that would be under check from a vector based on the other color's moves
