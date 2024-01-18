@@ -66,34 +66,38 @@ std::vector<T> Pieces::combineVectors(const std::vector<T>& v1, const std::vecto
 	return v1;
 }
 
+
 /**
 * gets all the moves for a pawn at pos
 */
 std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& col, const int& row, const std::string& color)
 {
+    constexpr WHITE_MOVES = 13;
+    constexpr BLACK_MOVES = 12;
+
 	std::vector<std::pair<int, std::vector<int>>> output{};
 
 	// needs to move up the board if white (neg row)
 	if (color == "white")
 	{
 		// check if it can move one space forward
-		if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row - 1)])
+		if (!(bPiecesData[WHITE_MOVES] | bPiecesData[BLACK_MOVES])[toInt(col, row - 1)])
 		{
 			output.push_back({ toInt(col, row - 1), std::vector<int>{} });
 
 			// check if it can move two spaces forward
-			if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row - 2)] && row == 6)
+			if (!(bPiecesData[WHITE_MOVES] | bPiecesData[BLACK_MOVES])[toInt(col, row - 2)] && row == 6)
 			{
 				output.push_back({ toInt(col, row - 2), std::vector<int>{} });
 			}
 		}
 
 		// check if it can capture diagonally
-		if ((bPiecesData[12])[toInt(col - 1, row - 1)])
+		if ((bPiecesData[BLACK_MOVES])[toInt(col - 1, row - 1)])
 		{
 			output.push_back({ toInt(col - 1, row - 1), std::vector<int>{} });
 		}
-		if (bPiecesData[12][toInt(col + 1, row - 1)])
+		if (bPiecesData[BLACK_MOVES][toInt(col + 1, row - 1)])
 		{
 			output.push_back({ toInt(col + 1, row - 1), std::vector<int>{} });
 		}
@@ -102,29 +106,42 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 	else
 	{
 		// check if it can move one space forward
-		if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row + 1)])
+		if (!(bPiecesData[WHITE_MOVES] | bPiecesData[BLACK_MOVES])[toInt(col, row + 1)])
 		{
 			output.push_back({ toInt(col, row + 1), std::vector<int>{} });
 
 			// check if it can move two spaces forward
-			if (!(bPiecesData[12] | bPiecesData[13])[toInt(col, row + 2)] && row == 1)
+			if (!(bPiecesData[WHITE_MOVES] | bPiecesData[BLACK_MOVES])[toInt(col, row + 2)] && row == 1)
 			{
 				output.push_back({ toInt(col, row + 2), std::vector<int>{} });
 			}
 		}
 
 		// check if it can capture diagonally
-		if (bPiecesData[13][toInt(col - 1, row + 1)])
+		if (bPiecesData[WHITE_MOVES][toInt(col - 1, row + 1)])
 		{
 			output.push_back({ toInt(col - 1, row + 1), std::vector<int>{} });
 		}
-		if (bPiecesData[13][toInt(col + 1, row + 1)])
+		if (bPiecesData[WHITE_MOVES][toInt(col + 1, row + 1)])
 		{
 			output.push_back({ toInt(col + 1, row + 1), std::vector<int>{} });
 		}
 	}
 
-	//en passant
+	return output;
+}
+
+std::vector<std::pair<int, std::vector<int>>> Pieces::getEnPassant(const int& col, const int& row, const std::string& color)
+{
+    constexpr DOUBLE_MOVE = 16;
+    
+    constexpr WHITE_PAWN = 6;
+    constexpr BLACK_PAWN = 0;
+
+    constexpr DOUBLE_ROW_WHITE = 3;
+    constexpr DOUBLE_ROW_BLACK = 4;
+
+    //en passant
 	if (!allLastMoves.empty())
 	{
 		int lastMove = allLastMoves.back();
@@ -135,13 +152,13 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 
 		if (color == "white")
 		{
-			bool wasDoubleMove = lastMove - secondToLastMove == 16;
-			if (lastMoveRow == 3 && row == 3 && wasDoubleMove)
+			bool wasDoubleMove = lastMove - secondToLastMove == DOUBLE_MOVE;
+			if (lastMoveRow == DOUBLE_ROW_WHITE && row == DOUBLE_ROW_WHITE && wasDoubleMove)
 			{
-				if (bPiecesData[0][toInt(col - 1, row)]) {
+				if (bPiecesData[WHITE_PAWN][toInt(col - 1, row)]) {
 					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(col - 1, row)} });
 				}
-				else if (bPiecesData[0][toInt(col + 1, row)])
+				else if (bPiecesData[WHITE_PAWN][toInt(col + 1, row)])
 				{
 					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(col + 1, row)} });
 				}
@@ -150,21 +167,19 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 		// black pawn
 		else
 		{
-			bool wasDoubleMove = lastMove - secondToLastMove == -16;
-			if (lastMoveRow == 4 && row == 4 && wasDoubleMove)
+			bool wasDoubleMove = lastMove - secondToLastMove == -DOUBLE_MOVE;
+			if (lastMoveRow == DOUBLE_ROW_BLACK && row == DOUBLE_ROW_BLACK && wasDoubleMove)
 			{
-				if (bPiecesData[6][toInt(col - 1, row)]) {
+				if (bPiecesData[BLACK_PAWN][toInt(col - 1, row)]) {
 					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(col - 1, row)} });
 				}
-				else if (bPiecesData[6][toInt(col + 1, row)])
+				else if (bPiecesData[BLACK_PAWN][toInt(col + 1, row)])
 				{
 					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(col + 1, row)} });
 				}
 			}
 		}
 	}
-
-	return output;
 }
 
 /**
@@ -489,6 +504,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 	{
 	case Piece::PAWN:
 		output = getPawnMoves(col, row, color);
+		output = Pieces::combineVectors(output, getEnPassant(col, row, color));
 		break;
 	case Piece::BISHOP:
 		output = getBRQMoves(col, row, color, type);

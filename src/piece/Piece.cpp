@@ -1,6 +1,6 @@
 #include "Piece.hpp"
 
-void Piece::setType(std::string const& color, PieceType const& type)
+void Piece::setType(PieceColor const& color, PieceType const& type)
 {
 	this->color = color;
 	this->type = type;
@@ -28,7 +28,18 @@ void Piece::setType(std::string const& color, PieceType const& type)
 		break;
 	}
 
-	if (!image.loadFromFile("assets/image/" + color + "_" + typeStr + ".png"))
+	std::string colorStr;
+	switch(color)
+	{
+	case WHITE:
+		colorStr = "white";
+		break;
+	case BLACK:
+		colorStr = "black";
+		break;
+	}
+
+	if (!image.loadFromFile("assets/image/" + colorStr + "_" + typeStr + ".png"))
 		std::cerr << std::endl;
 
 	displayPiece.setTexture(image);
@@ -36,8 +47,8 @@ void Piece::setType(std::string const& color, PieceType const& type)
 
 void Piece::reset()
 {
-	this->color = "";
-	this->type = NO_PIECE;
+	this->color = NO_COLOR;
+	this->type = NO_TYPE;
 
 	if (!image.loadFromFile("assets/image/blank.png"))
 		std::cerr << std::endl;
@@ -55,12 +66,12 @@ void Piece::setPosition(int const& x, int const& y)
 	displayPiece.setPosition(x, y);
 }
 
-Piece::PieceType Piece::getType()
+PieceType Piece::getType()
 {
 	return type;
 }
 
-std::string Piece::getColor()
+PieceColor Piece::getColor()
 {
 	return color;
 }
