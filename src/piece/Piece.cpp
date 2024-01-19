@@ -29,7 +29,7 @@ void Piece::setType(PieceColor const& color, PieceType const& type)
 	}
 
 	std::string colorStr;
-	switch(color)
+	switch (color)
 	{
 	case WHITE:
 		colorStr = "white";
@@ -66,12 +66,12 @@ void Piece::setPosition(int const& x, int const& y)
 	displayPiece.setPosition(x, y);
 }
 
-PieceType Piece::getType()
+Piece::PieceType Piece::getType()
 {
 	return type;
 }
 
-PieceColor Piece::getColor()
+Piece::PieceColor Piece::getColor()
 {
 	return color;
 }

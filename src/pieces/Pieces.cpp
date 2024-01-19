@@ -61,24 +61,22 @@ std::vector<T> Pieces::combineVectors(const std::vector<T>& v1, const std::vecto
 	else
 	{
 		std::cerr << "incompatible types for combination" << std::endl;
-		// You might want to handle the error case here
 	}
 	return v1;
 }
 
-
 /**
 * gets all the moves for a pawn at pos
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& col, const int& row, const std::string& color)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& col, const int& row, const Piece::PieceColor& color)
 {
-    constexpr WHITE_MOVES = 13;
-    constexpr BLACK_MOVES = 12;
+	constexpr int WHITE_MOVES = 13;
+	constexpr int BLACK_MOVES = 12;
 
 	std::vector<std::pair<int, std::vector<int>>> output{};
 
 	// needs to move up the board if white (neg row)
-	if (color == "white")
+	if (color == Piece::WHITE)
 	{
 		// check if it can move one space forward
 		if (!(bPiecesData[WHITE_MOVES] | bPiecesData[BLACK_MOVES])[toInt(col, row - 1)])
@@ -131,61 +129,64 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPawnMoves(const int& co
 	return output;
 }
 
-std::vector<std::pair<int, std::vector<int>>> Pieces::getEnPassant(const int& col, const int& row, const std::string& color)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getEnPassant(const int& col, const int& row, const Piece::PieceColor& color)
 {
-    constexpr DOUBLE_MOVE = 16;
-    
-    constexpr WHITE_PAWN = 6;
-    constexpr BLACK_PAWN = 0;
+	constexpr int DOUBLE_MOVE = 16;
 
-    constexpr DOUBLE_ROW_WHITE = 3;
-    constexpr DOUBLE_ROW_BLACK = 4;
+	constexpr int WHITE_PAWN = 6;
+	constexpr int BLACK_PAWN = 0;
 
-    //en passant
+	constexpr int DOUBLE_ROW_WHITE = 3;
+	constexpr int DOUBLE_ROW_BLACK = 4;
+
+	std::vector<std::pair<int, std::vector<int>>> output{};
+
+	//en passant
 	if (!allLastMoves.empty())
 	{
 		int lastMove = allLastMoves.back();
 		int secondToLastMove = allLastMoves[allLastMoves.size() - 2];
-
 		int lastMoveCol = lastMove % 8;
 		int lastMoveRow = lastMove / 8;
 
-		if (color == "white")
+		if (color == Piece::WHITE)
 		{
-			bool wasDoubleMove = lastMove - secondToLastMove == DOUBLE_MOVE;
+			bool wasDoubleMove = (lastMove - secondToLastMove) == DOUBLE_MOVE;
 			if (lastMoveRow == DOUBLE_ROW_WHITE && row == DOUBLE_ROW_WHITE && wasDoubleMove)
 			{
-				if (bPiecesData[WHITE_PAWN][toInt(col - 1, row)]) {
-					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(col - 1, row)} });
+				if (!bPiecesData[WHITE_PAWN][toInt(col - 1, row)]) {
+					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(lastMoveCol, row)} });
 				}
-				else if (bPiecesData[WHITE_PAWN][toInt(col + 1, row)])
+				else if (!bPiecesData[WHITE_PAWN][toInt(col + 1, row)])
 				{
-					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(col + 1, row)} });
+					output.push_back({ toInt(lastMoveCol, 2), std::vector<int>{toInt(lastMoveCol, row)} });
 				}
 			}
 		}
 		// black pawn
 		else
 		{
-			bool wasDoubleMove = lastMove - secondToLastMove == -DOUBLE_MOVE;
+			bool wasDoubleMove = (lastMove - secondToLastMove) == -DOUBLE_MOVE;
 			if (lastMoveRow == DOUBLE_ROW_BLACK && row == DOUBLE_ROW_BLACK && wasDoubleMove)
 			{
-				if (bPiecesData[BLACK_PAWN][toInt(col - 1, row)]) {
-					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(col - 1, row)} });
+				if (!bPiecesData[BLACK_PAWN][toInt(col - 1, row)]) {
+					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(lastMoveCol, row)} });
 				}
-				else if (bPiecesData[BLACK_PAWN][toInt(col + 1, row)])
+				else if (!bPiecesData[BLACK_PAWN][toInt(col + 1, row)])
 				{
-					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(col + 1, row)} });
+					output.push_back({ toInt(lastMoveCol, 5), std::vector<int>{toInt(lastMoveCol, row)} });
 				}
 			}
 		}
 	}
+
+	return output;
 }
 
 /**
 * gets all the moves for Bishop, Rook, Queen based on the pos and the directions given
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col, const int& row, const Piece::PieceColor& color, const Piece::PieceType& type)
 {
 	// get directions
 	std::vector<std::pair<int, int>> directions{};
@@ -218,7 +219,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col
 		while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 		{
 			// checks if own piece is there (if so then it cannot go there)
-			if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
+			if (bPiecesData[color == Piece::WHITE ? 13 : 12][toInt(newCol, newRow)] == 1)
 			{
 				// stops checking this direction
 				break;
@@ -228,7 +229,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col
 			output.push_back({ toInt(newCol, newRow), std::vector<int>{} });
 
 			// checks if opponent's piece is there (if so can go there)
-			if (bPiecesData[color == "black" ? 13 : 12][toInt(newCol, newRow)])
+			if (bPiecesData[color == Piece::BLACK ? 13 : 12][toInt(newCol, newRow)])
 			{
 				// stops checking this direction
 				break;
@@ -246,7 +247,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getBRQMoves(const int& col
 /**
 * gets the moves for the Knight and King based on directions given
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col, const int& row, const Piece::PieceColor& color, const Piece::PieceType& type)
 {
 	std::vector<std::pair<int, int>> directions{};
 	switch (type)
@@ -275,7 +276,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col
 		if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
 		{
 			// checks if own piece is there (if so then it cannot go there)
-			if (bPiecesData[color == "white" ? 13 : 12][toInt(newCol, newRow)] == 1)
+			if (bPiecesData[color == Piece::WHITE ? 13 : 12][toInt(newCol, newRow)] == 1)
 			{
 				continue;
 			}
@@ -289,7 +290,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKnKMoves(const int& col
 /**
 * gets the moves for a castling king
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int& pos, const int& col, const int& row, const std::string& color, const Piece::PieceType& type)
+std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int& pos, const int& col, const int& row, const Piece::PieceColor& color, const Piece::PieceType& type)
 {
 	bool hasMoved{ false };
 	if (std::find(allLastMoves.begin(), allLastMoves.end(), pos) != allLastMoves.end())
@@ -300,11 +301,11 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 	std::vector<std::pair<int, std::vector<int>>> output{};
 
 	// castling
-	std::vector<int> opponentsMoves{ getAllMoves(color == "white" ? "black" : "white") };
+	std::vector<int> opponentsMoves{ getAllMoves(color == Piece::WHITE ? "black" : "white") };
 
 	// make something to store spaces that need to be checked and move that will result
 	std::vector<std::tuple<std::vector<int>, int, std::vector<int>>> instructions{};
-	if (color == "white")
+	if (color == Piece::WHITE)
 	{
 		instructions.push_back({ { 60, 61, 62 }, 62 , { 63, 61 } });
 		instructions.push_back({ { 57, 58, 59, 60 }, 58, { 56, 59 } });
@@ -371,103 +372,103 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 	return output;
 }
 
-
-void Pieces::getPromote(){
-	if(this.color=="white" &&this.type=="pawn" && row==0){
+/*
+void Pieces::getPromote() {
+	if (this.color == "white" && this.type == "pawn" && row == 0) {
 		whitePromotion();
 	}
-	else if(this.color=="black" && this.type=="pawn" && row==7){
+	else if (this.color == "black" && this.type == "pawn" && row == 7) {
 		blackPromotion();
 	}
 }
 
 //waits for white to input a number 1-4 to promote their past pawn
-void Pieces::whitePromotion(){
+void Pieces::whitePromotion() {
 	//continue checking
-	while(!promoted){
+	while (!promoted) {
 		//checks if 1 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
 		{
 			//promote pawn to bishop
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[7]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[6]toInt(col, row) = 0;
+			bPiecesData[7]toInt(col, row) = 1;
+			promoted = true;
 		}
 		//checks if 2 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 		{
 			//promote pawn to knight
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[8]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[6]toInt(col, row) = 0;
+			bPiecesData[8]toInt(col, row) = 1;
+			promoted = true;
 		}
 		//checks if 3 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		{
 			//promote pawn to rook
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[9]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[6]toInt(col, row) = 0;
+			bPiecesData[9]toInt(col, row) = 1;
+			promoted = true;
 		}
 		//checks if 4 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
 		{
 			//promote pawn to queen
-			bPiecesData[6]toInt(col,row)=0;
-			bPiecesData[10]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[6]toInt(col, row) = 0;
+			bPiecesData[10]toInt(col, row) = 1;
+			promoted = true;
 		}
 	}
 }
 
 waits for black to input a number 1 - 4 to promote their past pawn
-void Pieces::blackPromotion(){
+void Pieces::blackPromotion() {
 	//continue checking
-	while(!promoted){
+	while (!promoted) {
 		//checks if 1 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
 		{
 			//promote pawn to bishop
-			bPiecesData[0]toInt(col,row)=0;
-			bPiecesData[1]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[0]toInt(col, row) = 0;
+			bPiecesData[1]toInt(col, row) = 1;
+			promoted = true;
 		}
 		//checks if 2 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 		{
 			//promote pawn to knight
-			bPiecesData[0]toInt(col,row)=0;
-			bPiecesData[2]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[0]toInt(col, row) = 0;
+			bPiecesData[2]toInt(col, row) = 1;
+			promoted = true;
 		}
 		//checks if 3 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		{
 			//promote pawn to rook
-			bPiecesData[0]toInt(col,row)=0;
-			bPiecesData[3]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[0]toInt(col, row) = 0;
+			bPiecesData[3]toInt(col, row) = 1;
+			promoted = true;
 		}
 		//checks if 4 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
 		{
 			//promote pawn to queen
-			bPiecesData[0]toInt(col,row)=0;
-			bPiecesData[4]toInt(col,row)=1;
-			promoted=true;
+			bPiecesData[0]toInt(col, row) = 0;
+			bPiecesData[4]toInt(col, row) = 1;
+			promoted = true;
 		}
 	}
-}
+}*/
 
 /**
 * removes any spaces that would be under check from a vector based on the other color's moves
 */
-std::vector<std::pair<int, std::vector<int>>> Pieces::removeChecks(const std::string& color, const std::vector<std::pair<int, std::vector<int>>>& tempOutput)
+std::vector<std::pair<int, std::vector<int>>> Pieces::removeChecks(const Piece::PieceColor& color, const std::vector<std::pair<int, std::vector<int>>>& tempOutput)
 {
 	std::vector<std::pair<int, std::vector<int>>> output{};
 
 	// finds out if a space would be under check
-	std::vector<int> checkSpaces1{ getAllMoves(color == "white" ? "black" : "white") };
+	std::vector<int> checkSpaces1{ getAllMoves(color == Piece::WHITE ? "black" : "white") };
 
 	// removes all moves that are in check
 	for (int i{ 0 }; i < tempOutput.size(); i++)
@@ -494,7 +495,7 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
 	std::tie(col, row) = toColRow(pos);
 
 	// gets the type and color of the piece
-	const std::string color{ piecesArr[col][row].getColor() };
+	const Piece::PieceColor color{ piecesArr[col][row].getColor() };
 	Piece::PieceType type{ piecesArr[col][row].getType() };
 
 	// creates the output vector
@@ -558,18 +559,18 @@ void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 	bPos2 = bPos2 << pos2;
 
 	// move its own piece
-	std::string color{ piecesArr[pos1 % 8][pos1 / 8].getColor() };
+	Piece::PieceColor color{ piecesArr[pos1 % 8][pos1 / 8].getColor() };
 	Piece::PieceType type{ piecesArr[pos1 % 8][pos1 / 8].getType() };
 
 	int board{ static_cast<int>(type) };
-	board += color == "white" ? 6 : 0;
+	board += color == Piece::WHITE ? 6 : 0;
 
 	bPiecesData[board] = bPiecesData[board] ^ bPos1;
 	bPiecesData[board] = bPiecesData[board] | bPos2;
 
 	// update the piecesData for its own color
-	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos1;
-	bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] | bPos2;
+	bPiecesData[color == Piece::WHITE ? 13 : 12] = bPiecesData[color == Piece::WHITE ? 13 : 12] ^ bPos1;
+	bPiecesData[color == Piece::WHITE ? 13 : 12] = bPiecesData[color == Piece::WHITE ? 13 : 12] | bPos2;
 
 	// adds previous moves to allLastMoves
 	allLastMoves.push_back(pos1);
@@ -589,11 +590,11 @@ void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 		bPos3 = bPos3 << additionalMoves[0];
 
 		board = static_cast<int>(type);
-		board += color == "white" ? 6 : 0;
+		board += color == Piece::WHITE ? 6 : 0;
 
 		bPiecesData[board] = bPiecesData[board] ^ bPos3;
 
-		bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos3;
+		bPiecesData[color == Piece::WHITE ? 13 : 12] = bPiecesData[color == Piece::WHITE ? 13 : 12] ^ bPos3;
 		break;
 	case 2:
 		// castling
@@ -607,31 +608,31 @@ void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 		bPos4 = bPos4 << additionalMoves[1];
 
 		board = static_cast<int>(type);
-		board += color == "white" ? 6 : 0;
+		board += color == Piece::WHITE ? 6 : 0;
 
 		bPiecesData[board] = bPiecesData[board] ^ bPos3;
 		bPiecesData[board] = bPiecesData[board] | bPos4;
 
-		bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos3;
-		bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] | bPos4;
+		bPiecesData[color == Piece::WHITE ? 13 : 12] = bPiecesData[color == Piece::WHITE ? 13 : 12] ^ bPos3;
+		bPiecesData[color == Piece::WHITE ? 13 : 12] = bPiecesData[color == Piece::WHITE ? 13 : 12] | bPos4;
 		break;
 	default:
 		// take out piece if it is taking a piece
 		color = piecesArr[pos2 % 8][pos2 / 8].getColor();
 		type = piecesArr[pos2 % 8][pos2 / 8].getType();
 
-		if (type == Piece::NO_PIECE)
+		if (type == Piece::NO_TYPE)
 		{
 			updateBoard();
 			return;
 		}
 
 		board = static_cast<int>(type);
-		board += color == "white" ? 6 : 0;
+		board += color == Piece::WHITE ? 6 : 0;
 
 		bPiecesData[board] = bPiecesData[board] ^ bPos2;
 
-		bPiecesData[color == "white" ? 13 : 12] = bPiecesData[color == "white" ? 13 : 12] ^ bPos2;
+		bPiecesData[color == Piece::WHITE ? 13 : 12] = bPiecesData[color == Piece::WHITE ? 13 : 12] ^ bPos2;
 		break;
 	}
 
@@ -669,7 +670,7 @@ void Pieces::updateBoard()
 				// sets the type of the Piece based on whether the array its going through is < 6
 				// and sets pieceTypes based off of which array it is going through
 				Piece::PieceType type{ static_cast<Piece::PieceType>(i % 6) };
-				piecesArr[col][row].setType(i < 6 ? "black" : "white", type);
+				piecesArr[col][row].setType(i < 6 ? Piece::BLACK : Piece::WHITE, type);
 				// sets position based on row and column the piece is in
 				piecesArr[col][row].setPosition((col * spaceSize) - 1, (row * spaceSize) - 1);
 				// updates the scale

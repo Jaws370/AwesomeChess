@@ -14,11 +14,12 @@ private:
 	float pieceScale{ 1.f };
 	std::bitset<64> bPiecesData[14]{};
 	std::vector<int> allLastMoves{};
-	std::vector<std::pair<int, std::vector<int>>> getPawnMoves(const int& col, const int& row, const std::string& color);
-	std::vector<std::pair<int, std::vector<int>>> getBRQMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type);
-	std::vector<std::pair<int, std::vector<int>>> getKnKMoves(const int& col, const int& row, const std::string& color, const Piece::PieceType& type);
-	std::vector<std::pair<int, std::vector<int>>> getKingCastling(const int& pos, const int& col, const int& row, const std::string& color, const Piece::PieceType& type);
-	std::vector<std::pair<int, std::vector<int>>> removeChecks(const std::string& color, const std::vector<std::pair<int, std::vector<int>>>& tempOutput);
+	std::vector<std::pair<int, std::vector<int>>> getPawnMoves(const int& col, const int& row, const Piece::PieceColor& color);
+	std::vector<std::pair<int, std::vector<int>>> getEnPassant(const int& col, const int& row, const Piece::PieceColor& color);
+	std::vector<std::pair<int, std::vector<int>>> getBRQMoves(const int& col, const int& row, const Piece::PieceColor& color, const Piece::PieceType& type);
+	std::vector<std::pair<int, std::vector<int>>> getKnKMoves(const int& col, const int& row, const Piece::PieceColor& color, const Piece::PieceType& type);
+	std::vector<std::pair<int, std::vector<int>>> getKingCastling(const int& pos, const int& col, const int& row, const Piece::PieceColor& color, const Piece::PieceType& type);
+	std::vector<std::pair<int, std::vector<int>>> removeChecks(const Piece::PieceColor& color, const std::vector<std::pair<int, std::vector<int>>>& tempOutput);
 
 public:
 	Pieces();
