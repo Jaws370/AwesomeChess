@@ -9,7 +9,6 @@
 
 TODO List:
 	PIECE MOVEMENT:
-	bugfix promoting to queen, rook, bishop, knight
 	need to make it so you have to move king if under check
 	add computer to play against
 
@@ -44,6 +43,7 @@ TODO List:
 	window can now resize
 	changed the function getPossibleMoves to have multiple functions of get(&piece)Moves for easier replacement
 	need to add something to make sure king does not castle while under check
+	bugfix promoting to queen, rook, bishop, knight
 */
 
 int main()
