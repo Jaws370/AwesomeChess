@@ -372,93 +372,96 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getKingCastling(const int&
 	return output;
 }
 
-/*
-void Pieces::getPromote() {
-	if (this.color == "white" && this.type == "pawn" && row == 0) {
-		whitePromotion();
+void Pieces::getPromote(Piece::PieceColor c, Piece::PieceType t, int col, int row) {
+	if (c == Piece::WHITE && t == Piece::PAWN && row == 0) {
+		whitePromotion(col, row);
+		updateBoard();
 	}
-	else if (this.color == "black" && this.type == "pawn" && row == 7) {
-		blackPromotion();
+	else if (c == Piece::BLACK && t == Piece::PAWN && row == 7) {
+		blackPromotion(col, row);
+		updateBoard();
 	}
 }
 
 //waits for white to input a number 1-4 to promote their past pawn
-void Pieces::whitePromotion() {
+void Pieces::whitePromotion(int col, int row) {
 	//continue checking
+	bool promoted{ false };
 	while (!promoted) {
 		//checks if 1 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
 		{
 			//promote pawn to bishop
-			bPiecesData[6]toInt(col, row) = 0;
-			bPiecesData[7]toInt(col, row) = 1;
+			bPiecesData[6].set(toInt(col, row), 0);
+			bPiecesData[7].set(toInt(col, row), 1);
 			promoted = true;
 		}
 		//checks if 2 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 		{
 			//promote pawn to knight
-			bPiecesData[6]toInt(col, row) = 0;
-			bPiecesData[8]toInt(col, row) = 1;
+			bPiecesData[6].set(toInt(col, row), 0);
+			bPiecesData[8].set(toInt(col, row), 1);
 			promoted = true;
 		}
 		//checks if 3 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		{
 			//promote pawn to rook
-			bPiecesData[6]toInt(col, row) = 0;
-			bPiecesData[9]toInt(col, row) = 1;
+			bPiecesData[6].set(toInt(col, row), 0);
+			bPiecesData[9].set(toInt(col, row), 1);
 			promoted = true;
 		}
 		//checks if 4 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
 		{
 			//promote pawn to queen
-			bPiecesData[6]toInt(col, row) = 0;
-			bPiecesData[10]toInt(col, row) = 1;
+			bPiecesData[6].set(toInt(col, row), 0);
+			bPiecesData[10].set(toInt(col, row), 1);
 			promoted = true;
 		}
 	}
 }
 
-waits for black to input a number 1 - 4 to promote their past pawn
-void Pieces::blackPromotion() {
+// waits for black to input a number 1 - 4 to promote their past pawn
+void Pieces::blackPromotion(int col, int row) {
 	//continue checking
+	bool promoted{ false };
 	while (!promoted) {
 		//checks if 1 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
 		{
 			//promote pawn to bishop
-			bPiecesData[0]toInt(col, row) = 0;
-			bPiecesData[1]toInt(col, row) = 1;
+			bPiecesData[0].set(toInt(col, row), 0);
+			bPiecesData[1].set(toInt(col, row), 1);
 			promoted = true;
 		}
 		//checks if 2 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
 		{
 			//promote pawn to knight
-			bPiecesData[0]toInt(col, row) = 0;
-			bPiecesData[2]toInt(col, row) = 1;
+			bPiecesData[0].set(toInt(col, row), 0);
+			bPiecesData[2].set(toInt(col, row), 1);
 			promoted = true;
 		}
 		//checks if 3 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
 		{
 			//promote pawn to rook
-			bPiecesData[0]toInt(col, row) = 0;
-			bPiecesData[3]toInt(col, row) = 1;
+			bPiecesData[0].set(toInt(col, row), 0);
+			bPiecesData[3].set(toInt(col, row), 1);
 			promoted = true;
 		}
 		//checks if 4 is pressed
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
 		{
 			//promote pawn to queen
-			bPiecesData[0]toInt(col, row) = 0;
-			bPiecesData[4]toInt(col, row) = 1;
+			bPiecesData[0].set(toInt(col, row), 0);
+			bPiecesData[4].set(toInt(col, row), 1);
 			promoted = true;
 		}
 	}
-}*/
+}
 
 /**
 * removes any spaces that would be under check from a vector based on the other color's moves
@@ -551,6 +554,9 @@ std::vector<std::pair<int, std::vector<int>>> Pieces::getPossibleMoves(const int
  */
 void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 {
+	int col, row;
+	std::tie(col, row) = toColRow(pos2);
+
 	// create a bit value representing each of the pieces we are moving
 	std::bitset<64> bPos1{ "0000000000000000000000000000000000000000000000000000000000000001" };
 	bPos1 = bPos1 << pos1;
@@ -561,6 +567,9 @@ void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 	// move its own piece
 	Piece::PieceColor color{ piecesArr[pos1 % 8][pos1 / 8].getColor() };
 	Piece::PieceType type{ piecesArr[pos1 % 8][pos1 / 8].getType() };
+
+	Piece::PieceColor color1{ piecesArr[pos1 % 8][pos1 / 8].getColor() };
+	Piece::PieceType type1{ piecesArr[pos1 % 8][pos1 / 8].getType() };
 
 	int board{ static_cast<int>(type) };
 	board += color == Piece::WHITE ? 6 : 0;
@@ -624,6 +633,7 @@ void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 		if (type == Piece::NO_TYPE)
 		{
 			updateBoard();
+			getPromote(color1, type1, col, row);
 			return;
 		}
 
@@ -638,6 +648,8 @@ void Pieces::movePiece(int& pos1, int& pos2, std::vector<int>& additionalMoves)
 
 	// update board
 	updateBoard();
+
+	getPromote(color1, type1, col, row);
 }
 
 /**

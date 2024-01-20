@@ -32,6 +32,9 @@ public:
 	static std::vector<T> combineVectors(const std::vector<T>& v1, const std::vector<T>& v2);
 	std::vector<int> getAllMoves(std::string color);
 	void resize(const float& spaceSize);
+	void whitePromotion(int col, int row);
+	void blackPromotion(int col, int row);
+	void getPromote(Piece::PieceColor c, Piece::PieceType t, int col, int row);
 	void updateBoard();
 };
 
