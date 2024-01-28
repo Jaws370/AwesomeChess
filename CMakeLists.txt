@@ -9,7 +9,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # add libraries
 add_subdirectory(src/board)
-add_subdirectory(src/piece)
+add_subdirectory(src/piece_types)
 add_subdirectory(src/pieces)
 add_subdirectory(src/user_input)
 
@@ -26,7 +26,7 @@ add_executable(AwesomeChess src/main.cpp)
 
 # link our libraries to exe
 target_link_libraries(AwesomeChess PUBLIC board)
-target_link_libraries(AwesomeChess PUBLIC piece)
+target_link_libraries(AwesomeChess PUBLIC piece_types)
 target_link_libraries(AwesomeChess PUBLIC pieces)
 target_link_libraries(AwesomeChess PUBLIC user_input)
 
@@ -36,8 +36,8 @@ target_link_libraries(AwesomeChess PRIVATE sfml-graphics)
 # include hpp file directories for our libraries
 target_include_directories(
   AwesomeChess
-  PUBLIC "${PROJECT_BINARY_DIR}/src/board" "${PROJECT_BINARY_DIR}/src/piece"
-         "${PROJECT_BINARY_DIR}/src/pieces" "${PROJECT_BINARY_DIR}/src/user_input")
+  PUBLIC "${PROJECT_BINARY_DIR}/src/board" "${PROJECT_BINARY_DIR}/src/pieces"
+         "${PROJECT_BINARY_DIR}/src/user_input")
 
 # sets the compiler to C++17 (makes it so that if used, it can use newer syntax)
 target_compile_features(AwesomeChess PRIVATE cxx_std_17)
@@ -57,10 +57,10 @@ endif()
 
 # copies assets to exe
 add_custom_command(
-    TARGET AwesomeChess POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-	${CMAKE_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:AwesomeChess>/assets)
+  TARGET AwesomeChess
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets
+          $<TARGET_FILE_DIR:AwesomeChess>/assets)
 
 # installs packages & binary files corresponding to targets
 install(TARGETS AwesomeChess)

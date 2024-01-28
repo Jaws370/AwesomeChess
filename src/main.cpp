@@ -1,5 +1,4 @@
 #include "./board/Board.hpp"
-#include "./piece/Piece.hpp"
 #include "./pieces/Pieces.hpp"
 #include "./user_input/UserInput.hpp"
 #include <SFML/Graphics.hpp>
