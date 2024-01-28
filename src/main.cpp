@@ -15,7 +15,7 @@ TODO List:
     add sounds for actions such as pieces moving, king being in check, etc.
 
     DISPLAY: (need new classes fo sho)
-    NEED BETTER SPRITES FOR PIECES: HIGHER QUALITY (need to make sure that the pieces are not distorted)
+    NEED BETTER SPRITES FOR PIECES: HIGHER QUALITY (need to make sure that the pieces are not distorted) <- Jack has some, just needs to get them in
     add a main menu screen with a start button, and a screen that plays after someone wins, which displays who won and who lost, as well as a replay button
     add a counter that counts the material lost and gained for each player, as well as an icon of the pieces lost, just like chess.com
     make the pieces move instead of teleport
