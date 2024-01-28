@@ -1,7 +1,7 @@
 #ifndef PIECES_HPP
 #define PIECES_HPP
 
-#include "../piece_types/shared/Piece.hpp"
+#include <Piece.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 

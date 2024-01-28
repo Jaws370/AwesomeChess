@@ -7,38 +7,27 @@
 class Piece
 {
 public:
-    enum PieceType
-    {
-        PAWN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        QUEEN,
-        KING,
-        NO_TYPE
-    };
+    const enum PieceType { PAWN, BISHOP, KNIGHT, ROOK, QUEEN, KING };
+    const enum PieceColor { WHITE, BLACK };
 
-    enum PieceColor
-    {
-        WHITE,
-        BLACK,
-        NO_COLOR
-    };
+    virtual void move() = 0;
+    virtual std::vector<int> getMoves() = 0;
+
+    sf::Sprite getSprite() const { return sprite; }
 
     Piece() = default;
-    void setType(PieceColor const &color, PieceType const &type);
-    sf::Sprite getSprite();
-    PieceType getType();
-    PieceColor getColor();
-    void setPosition(int const &x, int const &y);
-    void setScale(float const &x, float const &y);
-    void reset();
+
+protected:
+    int getPosition() const { return position; }
+    std::pair<int, int> getColumnRow() const { return {position % 8, position / 8}; }
+    PieceColor getColor() const { return color; }
 
 private:
-    sf::Texture image{};
+    int position{};
     PieceColor color{};
     PieceType type{};
-    sf::Sprite displayPiece{};
+    sf::Sprite sprite{};
+    sf::Texture texture{};
 };
 
 #endif

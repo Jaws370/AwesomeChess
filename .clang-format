@@ -2,7 +2,6 @@
 Language:        Cpp
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: true
 AlignEscapedNewlines: Left
 AlignOperands:   true
 AlignTrailingComments: true
@@ -11,14 +10,14 @@ BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BraceWrapping:
  AfterClass:      true
- AfterControlStatement: true
- AfterEnum:       true
+ AfterControlStatement: false
+ AfterEnum:       false
  AfterFunction:   true
  AfterNamespace: true
  AfterStruct:     true
  AfterUnion:      true
- BeforeCatch:     true
- BeforeElse:      true
+ BeforeCatch:     false
+ BeforeElse:      false
 ColumnLimit:     1000
 CommentPragmas: '^ IWYU pragma:'
 ConstructorInitializerIndentWidth: 4
