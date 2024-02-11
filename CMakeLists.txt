@@ -10,8 +10,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 # add libraries
 add_subdirectory(src/board)
 add_subdirectory(src/piece_types)
-add_subdirectory(src/pieces)
-add_subdirectory(src/user_input)
+add_subdirectory(src/game_data_controller)
 
 # include sfml packages
 include(FetchContent)
@@ -27,17 +26,15 @@ add_executable(AwesomeChess src/main.cpp)
 # link our libraries to exe
 target_link_libraries(AwesomeChess PUBLIC board)
 target_link_libraries(AwesomeChess PUBLIC piece_types)
-target_link_libraries(AwesomeChess PUBLIC pieces)
-target_link_libraries(AwesomeChess PUBLIC user_input)
+target_link_libraries(AwesomeChess PUBLIC game_data_controller)
 
 # link sfml to exe
 target_link_libraries(AwesomeChess PRIVATE sfml-graphics)
 
 # include hpp file directories for our libraries
 target_include_directories(
-  AwesomeChess
-  PUBLIC "${PROJECT_BINARY_DIR}/src/board" "${PROJECT_BINARY_DIR}/src/pieces"
-         "${PROJECT_BINARY_DIR}/src/user_input")
+  AwesomeChess PUBLIC "${PROJECT_BINARY_DIR}/src/board"
+                      "${PROJECT_BINARY_DIR}/src/game_data_controller")
 
 # sets the compiler to C++17 (makes it so that if used, it can use newer syntax)
 target_compile_features(AwesomeChess PRIVATE cxx_std_17)

@@ -1,7 +1,7 @@
 # include the libraries for each folder
 add_library(
   piece_types
-  shared/Piece.cpp
+  piece_base/PieceBase.cpp
   rook/Rook.cpp
   bishop/Bishop.cpp
   knight/Knight.cpp

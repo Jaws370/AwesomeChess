@@ -1,15 +1,15 @@
 #ifndef BISHOP_HPP
 #define BISHOP_HPP
 
-#include <Piece.hpp>
+#include "../piece_base/PieceBase.hpp"
 
-class Bishop : public Piece
+class Bishop : public PieceBase
 {
 public:
-    void move() override = 0;      // TODO add move
-    void getMoves() override = 0;  // TODO add getMoves
+    void move() override { return; };                     // TODO add move
+    std::vector<int> getMoves() override { return {}; };  // TODO add getMoves
 
-    Bishop() = default;  // TODO add constructor to set texture, color, type, position
-}
+    Bishop(int position);  // TODO add constructor to set color, position
+};
 
 #endif

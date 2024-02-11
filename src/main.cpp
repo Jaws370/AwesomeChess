@@ -1,6 +1,5 @@
 #include "./board/Board.hpp"
-#include "./pieces/Pieces.hpp"
-#include "./user_input/UserInput.hpp"
+#include "./game_data_controller/GameDataController.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <memory>
@@ -48,29 +47,23 @@ TODO List:
 int main()
 {
     // unique pointers for board and pieces (allocates memory on the heap)
-    std::unique_ptr board  = std::make_unique<Board>();
-    std::unique_ptr pieces = std::make_unique<Pieces>();
-
-    UserInput in;
+    std::unique_ptr board = std::make_unique<Board>();
+    std::unique_ptr gdc = std::make_unique<GameDataController>();
 
     sf::RenderWindow window(sf::VideoMode(512, 512), "AwesomeChess");
 
     // run the program as long as the window is open
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
 
-            switch (event.type)
-            {
+            switch (event.type) {
                 case sf::Event::MouseButtonPressed:
-                    if (event.mouseButton.button == sf::Mouse::Left)
-                    {
+                    if (event.mouseButton.button == sf::Mouse::Left) {
                         // get the position of the mouse and send it to be handled
-                        in.handleLeftClick(sf::Mouse::getPosition(window), *pieces);
+                        gdc->handleLeftClick(sf::Mouse::getPosition(window));
                     }
                     break;
                 case sf::Event::Closed:
@@ -78,7 +71,7 @@ int main()
                     break;
                 case sf::Event::Resized:
                     window.setView(sf::View(visibleArea));
-                    in.handleWindowResize(window, *board, *pieces);
+                    gdc->handleWindowResize(window, *board);
                     break;
                 default:
                     break;
@@ -90,7 +83,7 @@ int main()
 
         // draw all of the parts of the game
         board->displayBoard(window);
-        pieces->displayPieces(window);
+        gdc->displayPieces(window);
 
         // display the window contents on screen
         window.display();
